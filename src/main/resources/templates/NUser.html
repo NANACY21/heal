@@ -1,0 +1,31 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>NUser</title>
+</head>
+<body>
+<a href="addNUser.html">添加NUser</a><br/>
+
+所有行：<br/>
+<table>
+    <tr>
+        <td><input type="checkbox" name="cks"></td>
+        <td>nickname</td>
+        <td>password</td>
+        <td>编辑&emsp;删除</td>
+    </tr>
+    <tr th:each="nUser:${AllNUser}">
+        <td><input type="checkbox" name="uID" th:value="${nUser.uID}"></td>
+        <td th:text="${nUser.nickname}"></td>
+        <td th:text="${nUser.password}"></td>
+        <td>
+            <a th:href="@{/edit/{uID}/(uID=${nUser.uID})}">编辑</a>
+        </td>
+        <td>
+            <a th:href="@{/del/{uID}/(uID=${nUser.uID})}">删除</a>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Thymeleaf示例</title>
+</head>
+<body>
+
+这是安全路径，不能访问的<br/>
+thymeleaf：data从后端到ui<br/>
+th是thymeleaf模板语言的前缀<br/>
+<span th:text="hello"></span><br/>
+
+读取后台的键：<br/>
+<span th:text="${mes}"></span><br/>
+
+<input type="text" th:value="${mes}"><br/>
+
+if条件判断<br/>
+<span th:if="${sex}=='男'" th:text="${sex}">男</span><br/>
+<span th:if="${sex}=='女'" th:text="${sex}">女</span><br/>
+switch用法：<br/>
+<div th:switch="${num}">
+    <li th:case="1">1</li>
+    <li th:case="2">2</li>
+    <li th:case="3">3</li>
+    <li th:case="4">4</li>
+</div>
+
+迭代：<br/>
+<table>
+    <tr>
+        <td>id</td>
+        <td>name</td>
+    </tr>
+    <tr th:each="user,var:${users}">
+        <td th:text="${user.id}"></td>
+        <td th:text="${user.name}"></td>
+        <td th:text="${var.index}"></td>
+    </tr>
+</table>
+
+map：<br/>
+<table>
+    <tr>
+        <td>id</td>
+        <td>name</td>
+    </tr>
+    <tr th:each="map:${maps}">
+        <!--<td th:text="${map}"></td>-->
+        <td th:each="entry:${map}" th:text="${entry.value.id}"></td>
+        <td th:each="entry:${map}" th:text="${entry.value.name}"></td>
+    </tr>
+</table>
+
+
+<span th:text="${#httpServletRequest.getAttribute('msg')}"></span><br/>
+<span th:text="${#session.getAttribute('smsg')}"></span><br/>
+<span th:text="${#session.smsg}"></span><br/>
+
+url表达式语法：<br/>
+<img th:src="${pic}">
+
+<a th:href="@{http://image.baidu.com/search/detail?ct=503316480&z=undefined&tn=baiduimagedetail&ipn=d&word=%E5%9B%BE%E7%89%87&step_word=&ie=utf-8&in=&cl=2&lm=-1&st=undefined&hd=undefined&latest=undefined&copyright=undefined&cs=508387608,2848974022&os=617047380,400895123&simid=3969967284,421117829&pn=1&rn=1&di=194150&ln=772&fr=&fmq=1568190859549_R&fm=&ic=undefined&s=undefined&se=&sme=&tab=0&width=undefined&height=undefined&face=undefined&is=0,0&istype=0&ist=&jit=&bdtype=0&spn=0&pi=0&gsm=0&objurl=http%3A%2F%2Fpic33.nipic.com%2F20131007%2F13639685_123501617185_2.jpg&rpstart=0&rpnum=0&adpicid=0&force=undefined}"></a>
+</body>
+</html>

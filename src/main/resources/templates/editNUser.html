@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h2>编辑NUser</h2>
+<form action="/updateNUser" method="post">
+    <input type="hidden" name="uID" th:value="${nUser.uID}">
+    nickname:<input type="text" name="nickname" th:value="${nUser.nickname}"><br/>
+    password:<input type="text" name="password" th:value="${nUser.password}"><br/>
+    <input type="submit" value="确认修改NUser"><br/>
+</form>
+</body>
+</html>

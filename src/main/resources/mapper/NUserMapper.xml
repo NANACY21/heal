@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.personal.mapper.NUserMapper">
+    <insert id="insertNUser" parameterType="com.personal.pojo.NUser">
+      insert into nuser(nickname,password) values(#{nickname},#{password})
+    </insert>
+    <delete id="deleteNUserByUID" parameterType="long">
+        delete from nuser where uID =#{uID}
+    </delete>
+    <update id="updateNUser" parameterType="com.personal.pojo.NUser">
+        update nuser set nickname = #{nickname} ,password = #{password} where uID =#{uID}
+    </update>
+    <select id="selectNUserByUID" parameterType="long" resultType="com.personal.pojo.NUser">
+        select * from nuser where uID = #{uID}
+    </select>
+    <select id="selectAllNUser" resultType="com.personal.pojo.NUser">
+        select * from nuser
+    </select>
+</mapper>

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>添加NUser</title>
+</head>
+<body>
+<h2>添加NUser</h2>
+<form action="/addnuser1" method="post">
+
+    nickname：<input type="text" name="nickname"><font color="#cd5c5c" th:errors="${user.nickname}"></font><br/>
+    password：<input type="text" name="password"><font color="#cd5c5c" th:errors="${user.password}"></font><br/>
+    <input type="submit" value="添加NUser"><br/>
+</form>
+</body>
+</html>
