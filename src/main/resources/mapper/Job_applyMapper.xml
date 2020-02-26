@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.personal.mapper.Job_applyMapper" >
+    <resultMap id="BaseResultMap" type="com.personal.pojo.Job_apply" >
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="user_id" property="userId" jdbcType="BIGINT" />
+        <result column="position_id" property="positionId" jdbcType="BIGINT" />
+    </resultMap>
+    <sql id="Base_Column_List" >
+        id, user_id userId, position_id positionId
+    </sql>
+
+    <!--一些字段-->
+    <sql id="Position_Column_List" >
+        position.id, position.name, position.company_id companyId, position.user_id userId, position.detail,position.city,
+        position.need_num needNum, position.work_exp workExp, position.edu_bg eduBg, position.salary,
+        position.salary_float salaryFloat, position.workType worktype, position.faceTo faceto,position.status,position.releaseTime
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="Long" >
+        select
+        <include refid="Base_Column_List" />
+        from job_apply
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <select id="postList" resultType="com.personal.pojo.Position" parameterType="Long">
+        select <include refid="Position_Column_List" />
+        from job_apply,position where job_apply.user_id=#{userId,jdbcType=BIGINT} and job_apply.position_id=position.id
+    </select>
+    <select id="isPosted" resultType="com.personal.pojo.Job_apply" parameterType="com.personal.pojo.Job_apply">
+        select * from job_apply where user_id = #{userId,jdbcType=BIGINT} and position_id = #{positionId,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="Long" >
+        delete from job_apply
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="com.personal.pojo.Job_apply" >
+        insert into job_apply (id, user_id, position_id
+        )
+        values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{positionId,jdbcType=BIGINT}
+               )
+    </insert>
+    <insert id="insertSelective" parameterType="com.personal.pojo.Job_apply" >
+        insert into job_apply
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                id,
+            </if>
+            <if test="userId != null" >
+                user_id,
+            </if>
+            <if test="positionId != null" >
+                position_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="userId != null" >
+                #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="positionId != null" >
+                #{positionId,jdbcType=BIGINT},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.personal.pojo.Job_apply" >
+        update job_apply
+        <set >
+            <if test="userId != null" >
+                user_id = #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="positionId != null" >
+                position_id = #{positionId,jdbcType=BIGINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.personal.pojo.Job_apply" >
+        update job_apply
+        set user_id = #{userId,jdbcType=BIGINT},
+            position_id = #{positionId,jdbcType=BIGINT}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+</mapper>

@@ -1,11 +1,29 @@
+#mybatis逆向工程用不到该配置文件
 spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/bankcard?serverTimezone=UTC
+    url: jdbc:mysql://localhost:3306/job_search_website?serverTimezone=UTC
     username: root
     password: xy201619
     type: com.alibaba.druid.pool.DruidDataSource
+  kafka:
+#    指定kafka server的地址，集群配多个，中间，逗号隔开
+    bootstrap-servers: 127.0.0.1:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+#      默认群组ID
+      group-id: consumer_group1
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      auto-commit-interval: 1s
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
 mybatis:
   #  扫描的别名包
   type-aliases-package: com.personal.pojo
-  mapper-locations: classpath:mapper/NUserMapper.xml
+#  mapper-locations: classpath:mapper/TradeMapper.xml
+  mapper-locations: classpath:mapper/*Mapper.xml
+server:
+  port: 8088

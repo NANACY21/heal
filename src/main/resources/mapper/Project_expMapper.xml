@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.personal.mapper.Project_expMapper" >
+    <resultMap id="BaseResultMap" type="com.personal.pojo.Project_exp" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="resume_id" property="resumeId" jdbcType="BIGINT" />
+    </resultMap>
+    <resultMap id="ResultMapWithBLOBs" type="com.personal.pojo.Project_exp" extends="BaseResultMap" >
+        <result column="detail" property="detail" jdbcType="LONGVARCHAR" />
+    </resultMap>
+    <sql id="Base_Column_List" >
+        id, name,resume_id resumeId
+    </sql>
+    <sql id="Blob_Column_List" >
+        detail
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="Long" >
+        select
+        <include refid="Base_Column_List" />
+        ,
+        <include refid="Blob_Column_List" />
+        from project_exp
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <select id="getProject_expListByResumeId" resultType="com.personal.pojo.Project_exp" parameterType="Long">
+        select
+        <include refid="Base_Column_List" />
+        ,
+        <include refid="Blob_Column_List" />
+        from project_exp
+        where resume_id = #{resumeId,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="Long" >
+        delete from project_exp
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.personal.pojo.Project_exp" >
+        insert into project_exp (id,name, resume_id, detail
+        )
+        values (#{id,jdbcType=INTEGER},#{name,jdbcType=VARCHAR}, #{resumeId,jdbcType=BIGINT}, #{detail,jdbcType=LONGVARCHAR}
+               )
+    </insert>
+    <insert id="insertSelective" parameterType="com.personal.pojo.Project_exp" >
+        insert into project_exp
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                id,
+            </if>
+            <if test="name != null" >
+                name,
+            </if>
+            <if test="resumeId != null" >
+                resume_id,
+            </if>
+            <if test="detail != null" >
+                detail,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="name != null" >
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="resumeId != null" >
+                #{resumeId,jdbcType=BIGINT},
+            </if>
+            <if test="detail != null" >
+                #{detail,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.personal.pojo.Project_exp" >
+        update project_exp
+        <set >
+            <if test="name != null" >
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="resumeId != null" >
+                resume_id = #{resumeId,jdbcType=BIGINT},
+            </if>
+            <if test="detail != null" >
+                detail = #{detail,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.personal.pojo.Project_exp" >
+        update project_exp
+        set name = #{name,jdbcType=VARCHAR},resume_id = #{resumeId,jdbcType=BIGINT},
+            detail = #{detail,jdbcType=LONGVARCHAR}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.personal.pojo.Project_exp" >
+        update project_exp
+        set name = #{name,jdbcType=VARCHAR}, resume_id = #{resumeId,jdbcType=BIGINT}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+</mapper>

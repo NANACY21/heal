@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.personal.mapper.Work_expMapper" >
+    <resultMap id="BaseResultMap" type="com.personal.pojo.Work_exp" >
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="company" property="company" jdbcType="VARCHAR" />
+        <result column="department" property="department" jdbcType="VARCHAR" />
+        <result column="position" property="position" jdbcType="VARCHAR" />
+        <result column="workType" property="worktype" jdbcType="VARCHAR" />
+        <result column="beginDate" property="begindate" jdbcType="VARCHAR" />
+        <result column="endDate" property="enddate" jdbcType="VARCHAR" />
+        <result column="resume_id" property="resumeId" jdbcType="BIGINT" />
+    </resultMap>
+    <resultMap id="ResultMapWithBLOBs" type="com.personal.pojo.Work_exp" extends="BaseResultMap" >
+        <result column="detail" property="detail" jdbcType="LONGVARCHAR" />
+    </resultMap>
+    <sql id="Base_Column_List" >
+        id, company, department, position, workType worktype, beginDate begindate, endDate enddate, resume_id resumeId
+    </sql>
+    <sql id="Blob_Column_List" >
+        detail
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="Long" >
+        select
+        <include refid="Base_Column_List" />
+        ,
+        <include refid="Blob_Column_List" />
+        from work_exp
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <select id="getWork_expListByResumeId" resultType="com.personal.pojo.Work_exp" parameterType="Long">
+        select
+        <include refid="Base_Column_List" />
+        ,
+        <include refid="Blob_Column_List" /> from work_exp where resume_id=#{resumeId,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="Long" >
+        delete from work_exp
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="com.personal.pojo.Work_exp" >
+        insert into work_exp (id, company, department,
+                              position, workType, beginDate,
+                              endDate, resume_id, detail
+        )
+        values (#{id,jdbcType=BIGINT}, #{company,jdbcType=VARCHAR}, #{department,jdbcType=VARCHAR},
+                #{position,jdbcType=VARCHAR}, #{worktype,jdbcType=VARCHAR}, #{begindate,jdbcType=VARCHAR},
+                #{enddate,jdbcType=VARCHAR}, #{resumeId,jdbcType=BIGINT}, #{detail,jdbcType=LONGVARCHAR}
+               )
+    </insert>
+    <insert id="insertSelective" parameterType="com.personal.pojo.Work_exp" >
+        insert into work_exp
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                id,
+            </if>
+            <if test="company != null" >
+                company,
+            </if>
+            <if test="department != null" >
+                department,
+            </if>
+            <if test="position != null" >
+                position,
+            </if>
+            <if test="worktype != null" >
+                workType,
+            </if>
+            <if test="begindate != null" >
+                beginDate,
+            </if>
+            <if test="enddate != null" >
+                endDate,
+            </if>
+            <if test="resumeId != null" >
+                resume_id,
+            </if>
+            <if test="detail != null" >
+                detail,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="company != null" >
+                #{company,jdbcType=VARCHAR},
+            </if>
+            <if test="department != null" >
+                #{department,jdbcType=VARCHAR},
+            </if>
+            <if test="position != null" >
+                #{position,jdbcType=VARCHAR},
+            </if>
+            <if test="worktype != null" >
+                #{worktype,jdbcType=VARCHAR},
+            </if>
+            <if test="begindate != null" >
+                #{begindate,jdbcType=VARCHAR},
+            </if>
+            <if test="enddate != null" >
+                #{enddate,jdbcType=VARCHAR},
+            </if>
+            <if test="resumeId != null" >
+                #{resumeId,jdbcType=BIGINT},
+            </if>
+            <if test="detail != null" >
+                #{detail,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.personal.pojo.Work_exp" >
+        update work_exp
+        <set >
+            <if test="company != null" >
+                company = #{company,jdbcType=VARCHAR},
+            </if>
+            <if test="department != null" >
+                department = #{department,jdbcType=VARCHAR},
+            </if>
+            <if test="position != null" >
+                position = #{position,jdbcType=VARCHAR},
+            </if>
+            <if test="worktype != null" >
+                workType = #{worktype,jdbcType=VARCHAR},
+            </if>
+            <if test="begindate != null" >
+                beginDate = #{begindate,jdbcType=VARCHAR},
+            </if>
+            <if test="enddate != null" >
+                endDate = #{enddate,jdbcType=VARCHAR},
+            </if>
+            <if test="resumeId != null" >
+                resume_id = #{resumeId,jdbcType=BIGINT},
+            </if>
+            <if test="detail != null" >
+                detail = #{detail,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.personal.pojo.Work_exp" >
+        update work_exp
+        set company = #{company,jdbcType=VARCHAR},
+            department = #{department,jdbcType=VARCHAR},
+            position = #{position,jdbcType=VARCHAR},
+            workType = #{worktype,jdbcType=VARCHAR},
+            beginDate = #{begindate,jdbcType=VARCHAR},
+            endDate = #{enddate,jdbcType=VARCHAR},
+            resume_id = #{resumeId,jdbcType=BIGINT},
+            detail = #{detail,jdbcType=LONGVARCHAR}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.personal.pojo.Work_exp" >
+        update work_exp
+        set company = #{company,jdbcType=VARCHAR},
+            department = #{department,jdbcType=VARCHAR},
+            position = #{position,jdbcType=VARCHAR},
+            workType = #{worktype,jdbcType=VARCHAR},
+            beginDate = #{begindate,jdbcType=VARCHAR},
+            endDate = #{enddate,jdbcType=VARCHAR},
+            resume_id = #{resumeId,jdbcType=BIGINT}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+</mapper>

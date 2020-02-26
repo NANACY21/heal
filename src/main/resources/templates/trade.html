@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>trade - 行业</title>
+</head>
+<body>
+<table>
+    <tr>
+        <td><input type="checkbox" name="cks"></td>
+        <td>id</td>
+        <td>name</td>
+        <td>编辑</td>
+        <td>删除</td>
+    </tr>
+    <tr th:each="trade:${allTrade}">
+        <td><input type="checkbox" name="id" th:value="${trade.id}"></td>
+        <td th:text="${trade.id}"></td>
+        <td th:text="${trade.name}"></td>
+        <td>
+            <a th:href="@{/edit/{id}/(id=${trade.id})}">编辑</a>
+        </td>
+        <td>
+            <a th:href="@{/del/{id}/(id=${trade.id})}">删除</a>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

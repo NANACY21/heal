@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.personal.mapper.Edu_expMapper" >
+  <resultMap id="BaseResultMap" type="com.personal.pojo.Edu_exp" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="school" property="school" jdbcType="VARCHAR" />
+    <result column="major" property="major" jdbcType="VARCHAR" />
+    <result column="beginDate" property="begindate" jdbcType="VARCHAR" />
+    <result column="endDate" property="enddate" jdbcType="VARCHAR" />
+    <result column="ranking" property="ranking" jdbcType="VARCHAR" />
+    <result column="edu_bg" property="eduBg" jdbcType="VARCHAR" />
+    <result column="award" property="award" jdbcType="VARCHAR" />
+    <result column="resume_id" property="resumeId" jdbcType="BIGINT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, school, major, beginDate begindate, endDate enddate, ranking, edu_bg eduBg, award, resume_id resumeId
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from edu_exp
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="Long" >
+    delete from edu_exp
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.personal.pojo.Edu_exp" >
+    insert into edu_exp (id, school, major, 
+      beginDate, endDate, ranking, 
+      edu_bg, award, resume_id
+      )
+    values (#{id,jdbcType=BIGINT}, #{school,jdbcType=VARCHAR}, #{major,jdbcType=VARCHAR}, 
+      #{begindate,jdbcType=VARCHAR}, #{enddate,jdbcType=VARCHAR}, #{ranking,jdbcType=VARCHAR},
+      #{eduBg,jdbcType=VARCHAR}, #{award,jdbcType=VARCHAR}, #{resumeId,jdbcType=BIGINT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.personal.pojo.Edu_exp" >
+    insert into edu_exp
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="school != null" >
+        school,
+      </if>
+      <if test="major != null" >
+        major,
+      </if>
+      <if test="begindate != null" >
+        beginDate,
+      </if>
+      <if test="enddate != null" >
+        endDate,
+      </if>
+      <if test="ranking != null" >
+        ranking,
+      </if>
+      <if test="eduBg != null" >
+        edu_bg,
+      </if>
+      <if test="award != null" >
+        award,
+      </if>
+      <if test="resumeId != null" >
+        resume_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="school != null" >
+        #{school,jdbcType=VARCHAR},
+      </if>
+      <if test="major != null" >
+        #{major,jdbcType=VARCHAR},
+      </if>
+      <if test="begindate != null" >
+        #{begindate,jdbcType=VARCHAR},
+      </if>
+      <if test="enddate != null" >
+        #{enddate,jdbcType=VARCHAR},
+      </if>
+      <if test="ranking != null" >
+        #{ranking,jdbcType=VARCHAR},
+      </if>
+      <if test="eduBg != null" >
+        #{eduBg,jdbcType=VARCHAR},
+      </if>
+      <if test="award != null" >
+        #{award,jdbcType=VARCHAR},
+      </if>
+      <if test="resumeId != null" >
+        #{resumeId,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.personal.pojo.Edu_exp" >
+    update edu_exp
+    <set >
+      <if test="school != null" >
+        school = #{school,jdbcType=VARCHAR},
+      </if>
+      <if test="major != null" >
+        major = #{major,jdbcType=VARCHAR},
+      </if>
+      <if test="begindate != null" >
+        beginDate = #{begindate,jdbcType=VARCHAR},
+      </if>
+      <if test="enddate != null" >
+        endDate = #{enddate,jdbcType=VARCHAR},
+      </if>
+      <if test="ranking != null" >
+        ranking = #{ranking,jdbcType=VARCHAR},
+      </if>
+      <if test="eduBg != null" >
+        edu_bg = #{eduBg,jdbcType=VARCHAR},
+      </if>
+      <if test="award != null" >
+        award = #{award,jdbcType=VARCHAR},
+      </if>
+      <if test="resumeId != null" >
+        resume_id = #{resumeId,jdbcType=BIGINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.personal.pojo.Edu_exp" >
+    update edu_exp
+    set school = #{school,jdbcType=VARCHAR},
+      major = #{major,jdbcType=VARCHAR},
+      beginDate = #{begindate,jdbcType=VARCHAR},
+      endDate = #{enddate,jdbcType=VARCHAR},
+      ranking = #{ranking,jdbcType=VARCHAR},
+      edu_bg = #{eduBg,jdbcType=VARCHAR},
+      award = #{award,jdbcType=VARCHAR},
+      resume_id = #{resumeId,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="getEdu_expListByResumeId" parameterType="Long" resultType="com.personal.pojo.Edu_exp">
+    select <include refid="Base_Column_List" />
+    from edu_exp where resume_id=#{resumeId,jdbcType=BIGINT}
+  </select>
+</mapper>

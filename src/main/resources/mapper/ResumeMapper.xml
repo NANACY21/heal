@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.personal.mapper.ResumeMapper" >
+    <resultMap id="BaseResultMap" type="com.personal.pojo.Resume" >
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="user_id" property="userId" jdbcType="BIGINT" />
+        <result column="idNum" property="idnum" jdbcType="BIGINT" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="sex" property="sex" jdbcType="VARCHAR" />
+        <result column="telephone" property="telephone" jdbcType="BIGINT" />
+        <result column="email" property="email" jdbcType="VARCHAR" />
+        <result column="qq" property="qq" jdbcType="VARCHAR" />
+        <result column="birthday" property="birthday" jdbcType="VARCHAR" />
+        <result column="location" property="location" jdbcType="VARCHAR" />
+        <result column="address" property="address" jdbcType="VARCHAR" />
+        <result column="job_intent" property="jobIntent" jdbcType="VARCHAR" />
+        <result column="selfeval" property="selfeval" jdbcType="VARCHAR" />
+    </resultMap>
+    <resultMap id="ResultMapWithBLOBs" type="com.personal.pojo.Resume" extends="BaseResultMap" >
+        <result column="skill" property="skill" jdbcType="LONGVARCHAR" />
+    </resultMap>
+    <sql id="Base_Column_List" >
+        id, user_id userId, idNum idnum, name, sex, telephone, email, qq, birthday, location, address,
+    job_intent jobIntent,selfeval
+    </sql>
+    <sql id="Blob_Column_List" >
+        skill
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="Long" >
+        select
+        <include refid="Base_Column_List" />
+        ,
+        <include refid="Blob_Column_List" />
+        from resume
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <select id="getResumeByUserId" resultType="com.personal.pojo.Resume" parameterType="Long">
+        select
+        <include refid="Base_Column_List" />
+        ,
+        <include refid="Blob_Column_List" /> from resume where user_id=#{userId,jdbcType=BIGINT}
+    </select>
+    <!--查询所有投递到本公司的简历概要列表-->
+    <select id="resumeList" resultType="com.personal.pojo.web.ResumeOutline">
+        select re.user_id userId,re.name name,re.birthday birthday,re.email email,re.location location,re.job_intent jobIntent,
+        re.selfeval selfeval,
+        edu.school school,edu.major major,edu.edu_bg eduBg,work.company companyName,work.position position,
+        work.beginDate begindate,work.endDate enddate,pp.id positionId,pp.name positionName
+        from job_apply apply,resume re,edu_exp edu,project_exp project,work_exp work,position pp
+        where apply.position_id in
+        (select id from position
+        where company_id=#{param1})
+
+        and apply.user_id=re.user_id
+        and apply.position_id=pp.id
+        and re.id=edu.resume_id
+        and re.id=project.resume_id
+        and re.id=work.resume_id
+        limit #{param2},#{param3}
+    </select>
+    <select id="resumeListLength" resultType="java.lang.Integer" parameterType="Long">
+        select count(*)
+        from job_apply apply,resume re,edu_exp edu,project_exp project,work_exp work
+        where apply.position_id in
+              (select id from position
+               where company_id=#{param1})
+          and apply.user_id=re.user_id
+          and re.id=edu.resume_id
+          and re.id=project.resume_id
+          and re.id=work.resume_id
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="Long" >
+        delete from resume
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="com.personal.pojo.Resume" >
+        insert into resume (id, user_id, idNum,
+                            name, sex, telephone,
+                            email, qq, birthday, location,
+                            address, job_intent,selfeval, skill
+        )
+        values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{idnum,jdbcType=BIGINT},
+                #{name,jdbcType=VARCHAR}, #{sex,jdbcType=VARCHAR}, #{telephone,jdbcType=BIGINT},
+                #{email,jdbcType=VARCHAR}, #{qq,jdbcType=VARCHAR}, #{birthday,jdbcType=VARCHAR}, #{location,jdbcType=VARCHAR},
+                #{address,jdbcType=VARCHAR}, #{jobIntent,jdbcType=VARCHAR},#{selfeval,jdbcType=VARCHAR}, #{skill,jdbcType=LONGVARCHAR}
+               )
+    </insert>
+    <insert id="insertSelective" parameterType="com.personal.pojo.Resume" >
+        insert into resume
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                id,
+            </if>
+            <if test="userId != null" >
+                user_id,
+            </if>
+            <if test="idnum != null" >
+                idNum,
+            </if>
+            <if test="name != null" >
+                name,
+            </if>
+            <if test="sex != null" >
+                sex,
+            </if>
+            <if test="telephone != null" >
+                telephone,
+            </if>
+            <if test="email != null" >
+                email,
+            </if>
+            <if test="qq != null" >
+                qq,
+            </if>
+            <if test="birthday != null" >
+                birthday,
+            </if>
+            <if test="location != null" >
+                location,
+            </if>
+            <if test="address != null" >
+                address,
+            </if>
+            <if test="jobIntent != null" >
+                job_intent,
+            </if>
+            <if test="selfeval != null" >
+                selfeval,
+            </if>
+            <if test="skill != null" >
+                skill,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="userId != null" >
+                #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="idnum != null" >
+                #{idnum,jdbcType=BIGINT},
+            </if>
+            <if test="name != null" >
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="sex != null" >
+                #{sex,jdbcType=VARCHAR},
+            </if>
+            <if test="telephone != null" >
+                #{telephone,jdbcType=BIGINT},
+            </if>
+            <if test="email != null" >
+                #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="qq != null" >
+                #{qq,jdbcType=VARCHAR},
+            </if>
+            <if test="birthday != null" >
+                #{birthday,jdbcType=VARCHAR},
+            </if>
+            <if test="location != null" >
+                #{location,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null" >
+                #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="jobIntent != null" >
+                #{jobIntent,jdbcType=VARCHAR},
+            </if>
+            <if test="selfeval != null" >
+                #{selfeval,jdbcType=VARCHAR},
+            </if>
+            <if test="skill != null" >
+                #{skill,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.personal.pojo.Resume" >
+        update resume
+        <set >
+            <if test="userId != null" >
+                user_id = #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="idnum != null" >
+                idNum = #{idnum,jdbcType=BIGINT},
+            </if>
+            <if test="name != null" >
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="sex != null" >
+                sex = #{sex,jdbcType=VARCHAR},
+            </if>
+            <if test="telephone != null" >
+                telephone = #{telephone,jdbcType=BIGINT},
+            </if>
+            <if test="email != null" >
+                email = #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="qq != null" >
+                qq = #{qq,jdbcType=VARCHAR},
+            </if>
+            <if test="birthday != null" >
+                birthday = #{birthday,jdbcType=VARCHAR},
+            </if>
+            <if test="location != null" >
+                location = #{location,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null" >
+                address = #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="jobIntent != null" >
+                job_intent = #{jobIntent,jdbcType=VARCHAR},
+            </if>
+            <if test="selfeval != null" >
+                selfeval = #{selfeval,jdbcType=VARCHAR},
+            </if>
+            <if test="skill != null" >
+                skill = #{skill,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.personal.pojo.Resume" >
+        update resume
+        set user_id = #{userId,jdbcType=BIGINT},
+            idNum = #{idnum,jdbcType=BIGINT},
+            name = #{name,jdbcType=VARCHAR},
+            sex = #{sex,jdbcType=VARCHAR},
+            telephone = #{telephone,jdbcType=BIGINT},
+            email = #{email,jdbcType=VARCHAR},
+            qq = #{qq,jdbcType=VARCHAR},
+            birthday = #{birthday,jdbcType=VARCHAR},
+            location = #{location,jdbcType=VARCHAR},
+            address = #{address,jdbcType=VARCHAR},
+            job_intent = #{jobIntent,jdbcType=VARCHAR},
+            selfeval = #{selfeval,jdbcType=VARCHAR},
+            skill = #{skill,jdbcType=LONGVARCHAR}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.personal.pojo.Resume" >
+        update resume
+        set user_id = #{userId,jdbcType=BIGINT},
+            idNum = #{idnum,jdbcType=BIGINT},
+            name = #{name,jdbcType=VARCHAR},
+            sex = #{sex,jdbcType=VARCHAR},
+            telephone = #{telephone,jdbcType=BIGINT},
+            email = #{email,jdbcType=VARCHAR},
+            qq = #{qq,jdbcType=VARCHAR},
+            birthday = #{birthday,jdbcType=VARCHAR},
+            location = #{location,jdbcType=VARCHAR},
+            address = #{address,jdbcType=VARCHAR},
+            job_intent = #{jobIntent,jdbcType=VARCHAR},
+            selfeval = #{selfeval,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+</mapper>

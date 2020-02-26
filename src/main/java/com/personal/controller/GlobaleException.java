@@ -44,7 +44,8 @@ public class GlobaleException {
         Properties prop = new Properties();
         prop.put("java.lang.NullPointerException", "error1");
         prop.put("java.lang.ArithmeticException", "error2");
-        smer.setExceptionMappings(prop);//放到解析器里
+        //放到解析器里
+        smer.setExceptionMappings(prop);
         return smer;
     }
 }

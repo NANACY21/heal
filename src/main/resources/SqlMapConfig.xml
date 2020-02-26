@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+	<!--mybatis很好的支持Java类型和db类型的转换-->
+
+
+	<!-- 加载属性文件
+	 确实读到了这个文件-->
+	<properties resource="db.properties">
+	</properties>
+
+	<!--在该xml中位置在这
+	用于开启延迟加载配置，但要慎用延迟加载
+	登录：提取到nuser对象，只需要那两项，其它变量可以延迟加载，第一次调用其它变量时才加载
+
+	-->
+	<settings>
+		<!--启用延迟加载-->
+		<setting name="lazyLoadingEnabled" value="true"/>
+		<setting name="aggressiveLazyLoading" value="false"/>
+
+		<!--开启二级查询缓存总开关（mybatis一级查询缓存无需手动配置）-->
+		<setting name="cacheEnabled" value="true"/>
+	</settings>
+
+	<typeAliases>
+		<!--起别名-->
+		<typeAlias type="com.personal.pojo.Trade" alias="Trade"/>
+
+		<!--
+		该包下的类都会起别名
+		这样会以类名或类名首字母小写作为别名-->
+		<package name="com.personal.pojo"/>
+	</typeAliases>
+	
+	<!-- 和spring整合后 environments配置将废除-->
+	<environments default="development">
+		<!--一个environment 对应 一个db 对应 一个SqlSessionFactory-->
+		<environment id="development">
+		<!-- 使用jdbc事务管理，事务控制由mybatis-->
+			<transactionManager type="JDBC" />
+		<!-- 数据库连接池，由mybatis管理-->
+			<dataSource type="POOLED">
+				<property name="driver" value="${jdbc.driver}" />
+				<property name="url" value="${jdbc.url}" />
+				<property name="username" value="${jdbc.username}" />
+				<property name="password" value="${jdbc.password}" />
+			</dataSource>
+		</environment>
+	</environments>
+	
+	<!-- <environments default="development">
+		<environment id="orcl">
+		使用jdbc事务管理，事务控制由mybatis
+			<transactionManager type="JDBC" />
+		数据库连接池，由mybatis管理
+			<dataSource type="POOLED">
+				<property name="driver" value="${jdbc.driver}" />
+				<property name="url" value="${jdbc.url}" />
+				<property name="username" value="${jdbc.username}" />
+				<property name="password" value="${jdbc.password}" />
+			</dataSource>
+		</environment>
+	</environments> -->
+
+	<!-- 加载 映射文件 -->
+	<mappers>
+		<mapper resource="CompanyMapper.xml"/>
+		<mapper resource="TradeMapper.xml"/>
+		<mapper resource="UsersMapper.xml"/>
+		<mapper resource="EvalMapper.xml"/>
+		<mapper resource="PositionMapper.xml"/>
+		<mapper resource="Position_enumMapper.xml"/>
+		<mapper resource="EmployeeMapper.xml"/>
+
+		<!--有多个mapper在该包下，这样写，方便
+		但是，必须需要该包下的mapper接口和映射文件在同一个目录，且名字一样-->
+		<!--<package name="com.personal.mapper"/>-->
+
+
+		<!--这样写，需要mapper接口和映射文件在同一个目录，且名字一样-->
+		<!--<mapper class="com.personal.mapper.UserMapper"></mapper>-->
+	</mappers>
+	
+</configuration>

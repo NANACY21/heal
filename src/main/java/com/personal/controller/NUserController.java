@@ -20,18 +20,15 @@ public class NUserController {
     private NUserService service;
 
     @RequestMapping("/{path}")//adduser
-    public String pages(@PathVariable String path){
+    public String pages(@PathVariable String path) {
         System.out.println(path + "-------------------------");//adduser   addduser.html
-        return  path;//addNUser.html
+        return path;//addNUser.html
     }
 
     @RequestMapping("/showpage")//http://127.0.0.1:8080/showpage
     public String showpage(@ModelAttribute("user") NUser nUser){
         return  "addNUser";
     }
-
-
-
 
     /**urlparrten和跳转的页面采用不同命名
      * 添加NUser ok
@@ -54,6 +51,7 @@ public class NUserController {
     }
 
     //入口url！！！
+    //http://localhost:8080/getAllNUser
     @RequestMapping("/getAllNUser")
     public String getAllNUser(Model model){
         List<NUser> AllNUser = service.getAllNUser();

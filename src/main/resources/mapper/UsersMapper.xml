@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.personal.mapper.UsersMapper">
+    <resultMap id="BaseResultMap" type="com.personal.pojo.Users">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="company_id" jdbcType="BIGINT" property="companyId" />
+        <result column="username" jdbcType="VARCHAR" property="username" />
+        <result column="password" jdbcType="VARCHAR" property="password" />
+        <result column="user_type" jdbcType="INTEGER" property="userType" />
+        <result column="user_id" jdbcType="VARCHAR" property="userId" />
+        <result column="email" jdbcType="VARCHAR" property="email" />
+    </resultMap>
+<!--    起别名以使结果集映射到实体类-->
+    <sql id="Base_Column_List">
+    id, company_id companyId, username, password, user_type userType, user_id userId,email
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="Long" resultType="com.personal.pojo.Users">
+        select
+        <include refid="Base_Column_List" />
+        from users
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <select id="selectByUsername" parameterType="java.lang.String" resultType="com.personal.pojo.Users">
+        select
+        <include refid="Base_Column_List"></include>
+        from users
+        where username = #{username,jdbcType=VARCHAR}
+    </select>
+    <select id="selectByEmail" parameterType="java.lang.String" resultType="com.personal.pojo.Users">
+        select
+        <include refid="Base_Column_List"/>
+        from users
+        where email = #{email,jdbcType=VARCHAR}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="Long">
+    delete from users
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="com.personal.pojo.Users">
+    insert into users (id, company_id, username, 
+      password, user_type, user_id,email
+      )
+    values (#{id,jdbcType=BIGINT}, #{companyId,jdbcType=BIGINT}, #{username,jdbcType=VARCHAR}, 
+      #{password,jdbcType=VARCHAR}, #{userType,jdbcType=INTEGER}, #{userId,jdbcType=VARCHAR},
+      #{email,jdbcType=VARCHAR}
+      )
+  </insert>
+    <insert id="insertSelective" parameterType="com.personal.pojo.Users">
+        insert into users
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="companyId != null">
+                company_id,
+            </if>
+            <if test="username != null">
+                username,
+            </if>
+            <if test="password != null">
+                password,
+            </if>
+            <if test="userType != null">
+                user_type,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="email != null">
+                email,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="companyId != null">
+                #{companyId,jdbcType=BIGINT},
+            </if>
+            <if test="username != null">
+                #{username,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="userType != null">
+                #{userType,jdbcType=INTEGER},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null">
+                #{email,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.personal.pojo.Users">
+        update users
+        <set>
+            <if test="companyId != null">
+                company_id = #{companyId,jdbcType=BIGINT},
+            </if>
+            <if test="username != null">
+                username = #{username,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                password = #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="userType != null">
+                user_type = #{userType,jdbcType=INTEGER},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null">
+                email = #{email,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.personal.pojo.Users">
+    update users
+    set company_id = #{companyId,jdbcType=BIGINT},
+      username = #{username,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      user_type = #{userType,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

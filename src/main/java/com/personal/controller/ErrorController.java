@@ -8,11 +8,15 @@ import org.springframework.web.servlet.ModelAndView;
 
 /**
  * 只要抛出异常就跳到error.html
+ *
+ * @author 李箎
  */
 @Controller
 public class ErrorController {
+
     /**
      * 没测出来
+     *
      * @param model
      * @return
      */
@@ -28,6 +32,7 @@ public class ErrorController {
 
         return "index";
     }
+
     @RequestMapping("/e_test2")
     public String test2() {
         System.out.println(1 / 0);
@@ -35,8 +40,10 @@ public class ErrorController {
     }
 
 
-    /**针对处理自定义的异常
+    /**
+     * 针对处理自定义的异常
      * 捕获这种异常并处理
+     *
      * @param e
      * @return
      */
@@ -44,8 +51,8 @@ public class ErrorController {
 //    @ExceptionHandler(value = {java.lang.Exception.class})
     public ModelAndView nullExceptionHandler(Exception e) {
         ModelAndView mav = new ModelAndView();
-        System.out.println(e.getMessage()+"nullLLL");
-
+        System.out.println(e.getMessage() + "nullLLL");
+        System.out.println("空指针666");
         mav.addObject("error", e.toString());
         mav.setViewName("error1");
         return mav;
@@ -54,8 +61,8 @@ public class ErrorController {
     @ExceptionHandler(value = {java.lang.ArithmeticException.class})
     public ModelAndView arithmeticExceptionHandler(Exception e) {
         ModelAndView mav = new ModelAndView();
-        System.out.println(e.getMessage()+"nullLLL");
-
+        System.out.println(e.getMessage() + "nullLLL");
+        System.out.println("空指针777");
         mav.addObject("error", e.toString());
         mav.setViewName("error1");
         return mav;

@@ -12,5 +12,4 @@ public class HealApplicationTests {
     @Test
     public void contextLoads() {
     }
-
 }

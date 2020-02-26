@@ -14,10 +14,10 @@ public class NUser {
 
     //该校验只适用于（生效于）该分组
 
-    @NotBlank(message = "昵称不允许为空")
+    @NotBlank(message = "用户名不能为空")
     private String nickname;
 
-    @NotBlank(message = "密码不允许为空")
+    @NotBlank(message = "密码不能为空")
     private String password;
 
     public NUser() {

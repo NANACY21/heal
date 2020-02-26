@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.personal.mapper.PositionMapper" >
+    <resultMap id="BaseResultMap" type="com.personal.pojo.Position" >
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="company_id" property="companyId" jdbcType="BIGINT" />
+        <result column="user_id" property="userId" jdbcType="BIGINT" />
+        <result column="detail" property="detail" jdbcType="VARCHAR" />
+        <result column="city" property="city" jdbcType="VARCHAR" />
+        <result column="need_num" property="needNum" jdbcType="VARCHAR" />
+        <result column="work_exp" property="workExp" jdbcType="VARCHAR" />
+        <result column="edu_bg" property="eduBg" jdbcType="VARCHAR" />
+        <result column="salary" property="salary" jdbcType="INTEGER" />
+        <result column="salary_float" property="salaryFloat" jdbcType="INTEGER" />
+        <result column="workType" property="worktype" jdbcType="VARCHAR" />
+        <result column="faceTo" property="faceto" jdbcType="VARCHAR" />
+        <result column="status" property="status" jdbcType="INTEGER" />
+        <result column="releaseTime" property="releaseTime" jdbcType="TIMESTAMP" />
+    </resultMap>
+
+    <resultMap id="ReleasePosition" type="com.personal.pojo.web.ReleasePosition" >
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="company_id" property="companyId" jdbcType="BIGINT" />
+        <result column="user_id" property="userId" jdbcType="BIGINT" />
+        <result column="detail" property="detail" jdbcType="VARCHAR" />
+        <result column="city" property="city" jdbcType="VARCHAR" />
+        <result column="need_num" property="needNum" jdbcType="VARCHAR" />
+        <result column="work_exp" property="workExp" jdbcType="VARCHAR" />
+        <result column="edu_bg" property="eduBg" jdbcType="VARCHAR" />
+        <result column="salary" property="salary" jdbcType="INTEGER" />
+        <result column="salary_float" property="salaryFloat" jdbcType="INTEGER" />
+        <result column="workType" property="worktype" jdbcType="VARCHAR" />
+        <result column="faceTo" property="faceto" jdbcType="VARCHAR" />
+        <result column="status" property="status" jdbcType="INTEGER" />
+        <result column="releaseTime" property="releaseTime" jdbcType="TIMESTAMP" />
+        <result column="trade" property="trade" jdbcType="VARCHAR" />
+        <result column="companyName" property="companyName" jdbcType="VARCHAR" />
+        <result column="companyInfo" property="companyInfo" jdbcType="VARCHAR" />
+    </resultMap>
+    <sql id="Base_Column_List" >
+        id, name, company_id companyId, user_id userId, detail,city, need_num needNum, work_exp workExp, edu_bg eduBg, salary,
+    salary_float salaryFloat, workType worktype, faceTo faceto,status,releaseTime
+    </sql>
+    <select id="selectByPrimaryKey" resultType="com.personal.pojo.Position" parameterType="Long" >
+        select
+        <include refid="Base_Column_List" />
+        from position
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <select id="selectByCompanyId" parameterType="Long" resultType="com.personal.pojo.Position">
+        select
+        <include refid="Base_Column_List" />
+        from position where company_id = #{companyId,jdbcType=BIGINT}
+    </select>
+    <select id="selectByStatus" resultType="com.personal.pojo.web.ReleasePosition">
+        select
+            position.id, position.name, position.company_id companyId, position.user_id userId, position.detail,position.city, position.need_num needNum, position.work_exp workExp, position.edu_bg eduBg, position.salary,
+            position.salary_float salaryFloat, position.workType worktype, position.faceTo faceto,position.status,position.releaseTime,trade.name trade
+        from position,position_enum pe1,position_enum pe2,company,trade
+        where position.status = #{param1} and position.name=pe1.name and pe1.parent_id=pe2.id and pe2.trade_id=trade.id
+        and position.company_id=company.id order by position.releaseTime desc limit 0,#{param2}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="Long" >
+        delete from position
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="com.personal.pojo.Position" >
+        insert into position (id, name, company_id,
+                              user_id, detail, city, need_num,
+                              work_exp, edu_bg,
+                              salary, salary_float, workType,
+                              faceTo,status,releaseTime)
+        values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{companyId,jdbcType=BIGINT},
+                #{userId,jdbcType=BIGINT}, #{detail,jdbcType=VARCHAR},
+                #{city,jdbcType=VARCHAR},#{needNum,jdbcType=VARCHAR}, #{workExp,jdbcType=VARCHAR}, #{eduBg,jdbcType=VARCHAR},
+                #{salary,jdbcType=INTEGER}, #{salaryFloat,jdbcType=INTEGER}, #{worktype,jdbcType=VARCHAR},
+                #{faceto,jdbcType=VARCHAR},#{status,jdbcType=INTEGER},#{releaseTime,jdbcType=TIMESTAMP});
+
+    </insert>
+    <insert id="insertSelective" parameterType="com.personal.pojo.Position" >
+        insert into position
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                id,
+            </if>
+            <if test="name != null" >
+                name,
+            </if>
+            <if test="companyId != null" >
+                company_id,
+            </if>
+            <if test="userId != null" >
+                user_id,
+            </if>
+            <if test="detail != null" >
+                detail,
+            </if>
+            <if test="city != null" >
+                city,
+            </if>
+            <if test="needNum != null" >
+                need_num,
+            </if>
+            <if test="workExp != null" >
+                work_exp,
+            </if>
+            <if test="eduBg != null" >
+                edu_bg,
+            </if>
+            <if test="salary != null" >
+                salary,
+            </if>
+            <if test="salaryFloat != null" >
+                salary_float,
+            </if>
+            <if test="worktype != null" >
+                workType,
+            </if>
+            <if test="faceto != null" >
+                faceTo,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="releaseTime != null" >
+                releaseTime,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="name != null" >
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="companyId != null" >
+                #{companyId,jdbcType=BIGINT},
+            </if>
+            <if test="userId != null" >
+                #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="detail != null" >
+                #{detail,jdbcType=VARCHAR},
+            </if>
+            <if test="city != null" >
+                #{city,jdbcType=VARCHAR},
+            </if>
+            <if test="needNum != null" >
+                #{needNum,jdbcType=VARCHAR},
+            </if>
+            <if test="workExp != null" >
+                #{workExp,jdbcType=VARCHAR},
+            </if>
+            <if test="eduBg != null" >
+                #{eduBg,jdbcType=VARCHAR},
+            </if>
+            <if test="salary != null" >
+                #{salary,jdbcType=INTEGER},
+            </if>
+            <if test="salaryFloat != null" >
+                #{salaryFloat,jdbcType=INTEGER},
+            </if>
+            <if test="worktype != null" >
+                #{worktype,jdbcType=VARCHAR},
+            </if>
+            <if test="faceto != null" >
+                #{faceto,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null" >
+                #{status,jdbcType=INTEGER},
+            </if>
+            <if test="releaseTime != null" >
+                #{releaseTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.personal.pojo.Position" >
+        update position
+        <set >
+            <if test="name != null" >
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="companyId != null" >
+                company_id = #{companyId,jdbcType=BIGINT},
+            </if>
+            <if test="userId != null" >
+                user_id = #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="detail != null" >
+                detail = #{detail,jdbcType=VARCHAR},
+            </if>
+            <if test="city != null" >
+                city = #{city,jdbcType=VARCHAR},
+            </if>
+            <if test="needNum != null" >
+                need_num = #{needNum,jdbcType=VARCHAR},
+            </if>
+            <if test="workExp != null" >
+                work_exp = #{workExp,jdbcType=VARCHAR},
+            </if>
+            <if test="eduBg != null" >
+                edu_bg = #{eduBg,jdbcType=VARCHAR},
+            </if>
+            <if test="salary != null" >
+                salary = #{salary,jdbcType=INTEGER},
+            </if>
+            <if test="salaryFloat != null" >
+                salary_float = #{salaryFloat,jdbcType=INTEGER},
+            </if>
+            <if test="worktype != null" >
+                workType = #{worktype,jdbcType=VARCHAR},
+            </if>
+            <if test="faceto != null" >
+                faceTo = #{faceto,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null" >
+                status = #{status,jdbcType=INTEGER},
+            </if>
+            <if test="releaseTime != null" >
+                releaseTime = #{releaseTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.personal.pojo.Position" >
+        update position
+        set name = #{name,jdbcType=VARCHAR},
+            company_id = #{companyId,jdbcType=BIGINT},
+            user_id = #{userId,jdbcType=BIGINT},
+            detail = #{detail,jdbcType=VARCHAR},
+            city = #{city,jdbcType=VARCHAR},
+            need_num = #{needNum,jdbcType=VARCHAR},
+            work_exp = #{workExp,jdbcType=VARCHAR},
+            edu_bg = #{eduBg,jdbcType=VARCHAR},
+            salary = #{salary,jdbcType=INTEGER},
+            salary_float = #{salaryFloat,jdbcType=INTEGER},
+            workType = #{worktype,jdbcType=VARCHAR},
+            faceTo = #{faceto,jdbcType=VARCHAR},
+            status = #{status,jdbcType=INTEGER},
+            releaseTime = #{releaseTime,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+</mapper>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.personal.mapper.CompanyMapper" >
+    <resultMap id="BaseResultMap" type="com.personal.pojo.web.Company" >
+        <id column="id" property="id" jdbcType="BIGINT" />
+    </resultMap>
+    <!--公司列表：公司id、公司在招职位数。列出发布了职位的公司-->
+    <select id="companyList" resultType="com.personal.pojo.web.Company">
+        select count(*) positionNum,company_id id
+        from position group by company_id;
+    </select>
+</mapper>
