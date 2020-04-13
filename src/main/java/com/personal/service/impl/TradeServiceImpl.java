@@ -35,7 +35,7 @@ public class TradeServiceImpl implements TradeService {
         return tradeMapper.getAllTrade();
     }
 
-    /**
+    /**！！！
      * 所有行业，每个行业有行业的划分、职位
      *
      * @return

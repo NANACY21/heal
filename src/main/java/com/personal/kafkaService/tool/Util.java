@@ -35,7 +35,7 @@ public class Util {
         kafkaConfigMap.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 10000);
         kafkaConfigMap.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 3000);
         //少一点 一次从kafka中poll()拉取出来的数据条数 max.poll.records条数据需要在在session.timeout.ms这个时间内处理完
-        kafkaConfigMap.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 30);
+        kafkaConfigMap.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 60);
         return kafkaConfigMap;
     }
 
@@ -45,14 +45,14 @@ public class Util {
         kafkaConfigProp.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         kafkaConfigProp.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         kafkaConfigProp.put(ConsumerConfig.GROUP_ID_CONFIG, "consumer_group1");
-        kafkaConfigProp.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
-        kafkaConfigProp.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, 7000);
+        kafkaConfigProp.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, true);
+        kafkaConfigProp.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, 1000);
         kafkaConfigProp.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 60000);
         kafkaConfigProp.put("request.timeout.ms", 70000);
         kafkaConfigProp.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         kafkaConfigProp.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 10000);
         kafkaConfigProp.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 3000);
-        kafkaConfigProp.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 30);
+        kafkaConfigProp.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 60);
         kafkaConfigProp.put("retries", 0);
         kafkaConfigProp.put("batch.size", 16384);
         kafkaConfigProp.put("linger.ms", 1);

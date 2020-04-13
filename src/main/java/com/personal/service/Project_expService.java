@@ -14,6 +14,13 @@ public interface Project_expService {
     String saveProject_exp(Project_exp project_exp);
 
     /**
+     * 删除一个项目经历
+     * @param projectExpId 项目经历id
+     * @return
+     */
+    String delProject_exp(long projectExpId);
+
+    /**
      * 某个简历的项目经历列表
      * @param resumeId
      * @return

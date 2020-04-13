@@ -2,7 +2,10 @@ package com.personal.config;
 
 import com.personal.config.interceptors.LoginInterceptor;
 import com.personal.util.ConstPool;
+import com.personal.util.HttpSessionListenerImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.*;
 
@@ -16,13 +19,17 @@ public class WebMvcConfigurerImpl implements WebMvcConfigurer {
     private LoginInterceptor loginInterceptor;
     /**
      * 解决跨域问题
-     * 随意加配置类可能导致跨域无效，数据加载不出
-     *
+     * 随意加配置类可能导致跨域无效，数据加载不出来
+     * .allowedOrigins(ConstPool.WEB_IP)
      * @param registry
      */
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**").allowedHeaders("*").allowedMethods("*").allowedOrigins(ConstPool.WEB_IP).allowCredentials(true);
+        registry.addMapping("/**")
+                .allowedHeaders("*")
+                .allowedMethods("*")
+                .allowedOrigins("*")
+                .allowCredentials(true);
     }
 
     /**
@@ -45,6 +52,19 @@ public class WebMvcConfigurerImpl implements WebMvcConfigurer {
      */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(loginInterceptor).addPathPatterns("/**").excludePathPatterns("/login", "/register","/isLogged");
+        registry.addInterceptor(loginInterceptor)
+                .addPathPatterns("/**")
+                .excludePathPatterns("/login", "/register", "/isLogged");
     }
+
+    /**
+     * 已登录在线用户
+     * @return
+     */
+//    @Bean
+//    public ServletListenerRegistrationBean getListener() {
+//        ServletListenerRegistrationBean servletListenerRegistrationBean = new ServletListenerRegistrationBean();
+//        servletListenerRegistrationBean.setListener(new HttpSessionListenerImpl());
+//        return servletListenerRegistrationBean;
+//    }
 }

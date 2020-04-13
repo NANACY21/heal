@@ -26,6 +26,12 @@
     <sql id="Blob_Column_List" >
         skill
     </sql>
+
+    <sql id="resume_query_condition">
+        <if test="beginRowIndex!=null and rowNum!=null">
+            limit #{beginRowIndex},#{rowNum}
+        </if>
+    </sql>
     <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="Long" >
         select
         <include refid="Base_Column_List" />
@@ -41,33 +47,30 @@
         <include refid="Blob_Column_List" /> from resume where user_id=#{userId,jdbcType=BIGINT}
     </select>
     <!--查询所有投递到本公司的简历概要列表-->
-    <select id="resumeList" resultType="com.personal.pojo.web.ResumeOutline">
-        select re.user_id userId,re.name name,re.birthday birthday,re.email email,re.location location,re.job_intent jobIntent,
-        re.selfeval selfeval,
-        edu.school school,edu.major major,edu.edu_bg eduBg,work.company companyName,work.position position,
-        work.beginDate begindate,work.endDate enddate,pp.id positionId,pp.name positionName
-        from job_apply apply,resume re,edu_exp edu,project_exp project,work_exp work,position pp
-        where apply.position_id in
-        (select id from position
-        where company_id=#{param1})
-
-        and apply.user_id=re.user_id
-        and apply.position_id=pp.id
-        and re.id=edu.resume_id
-        and re.id=project.resume_id
-        and re.id=work.resume_id
-        limit #{param2},#{param3}
-    </select>
-    <select id="resumeListLength" resultType="java.lang.Integer" parameterType="Long">
-        select count(*)
-        from job_apply apply,resume re,edu_exp edu,project_exp project,work_exp work
+    <select id="resumeList" resultType="com.personal.pojo.web.ResumeOutline" parameterType="hashmap">
+        select re.user_id userId,re.name name,re.email email,re.location location,re.job_intent jobIntent,
+               re.selfeval selfeval,re.birthday birthday,uu.username
+        from resume re,users uu where re.user_id in
+        (select apply.user_id
+        from job_apply apply
         where apply.position_id in
               (select id from position
-               where company_id=#{param1})
-          and apply.user_id=re.user_id
-          and re.id=edu.resume_id
-          and re.id=project.resume_id
-          and re.id=work.resume_id
+               where company_id=#{companyId}) group by apply.user_id) and re.user_id=uu.id
+              <include refid="resume_query_condition"/>
+    </select>
+
+<!--    某职位的所有投递的简历-->
+    <select id="getResumeNameList" resultType="com.personal.pojo.Resume" parameterType="Long">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from resume where user_id in
+        (select apply.user_id
+        from job_apply apply where apply.position_id=#{positionId});
+    </select>
+    <select id="resumeCount" resultType="com.personal.pojo.Resume">
+        select <include refid="Base_Column_List"/> from resume
     </select>
     <delete id="deleteByPrimaryKey" parameterType="Long" >
         delete from resume

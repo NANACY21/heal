@@ -1,21 +1,25 @@
 package com.personal.pojo;
 
+import com.personal.util.ConstPool;
+import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
 /**
- * 职位对象
- * 使用elasticsearch
+ * 职位
+ * 使用ES
  * 在SpringDataElasticSearch中，只需要操作对象，
- * 就可以操作elasticsearch中的数据
+ * 就可以操作ES中的数据
  *
  * @author 李箎
  */
-@Document(indexName = "position", type = "docs", shards = 1, replicas = 1)
+@Data
+@Document(indexName = ConstPool.INDEX_NAME, type = "position", shards = 3, replicas = 2)
 public class Position {
     @Id
+    @Field(type = FieldType.Long)
     private Long id;
 
     @Field(type = FieldType.Text, analyzer = "ik_max_word")
@@ -23,6 +27,16 @@ public class Position {
 
     @Field(type = FieldType.Keyword)
     private Long companyId;
+
+    public Position(Long id, String name, Long companyId, Long userId, String detail, String workExp, String eduBg) {
+        this.id = id;
+        this.name = name;
+        this.companyId = companyId;
+        this.userId = userId;
+        this.detail = detail;
+        this.workExp = workExp;
+        this.eduBg = eduBg;
+    }
 
     @Field(type = FieldType.Keyword)
     private Long userId;
@@ -43,11 +57,19 @@ public class Position {
     private String worktype;
 
     private String faceto;
+    /**
+     * 对于招聘者来说的
+     */
     private int status;
     private String releaseTime;
 
     //内存数据
     private String del;
+
+    /**
+     * 投递状态 对于求职者来说的
+     */
+    private int postStatus;
 
     public Position() {
     }
@@ -180,6 +202,14 @@ public class Position {
         this.releaseTime = releaseTime;
     }
 
+    public int getPostStatus() {
+        return postStatus;
+    }
+
+    public void setPostStatus(int postStatus) {
+        this.postStatus = postStatus;
+    }
+
     @Override
     public String toString() {
         return "Position{" +
@@ -199,6 +229,7 @@ public class Position {
                 ", status=" + status +
                 ", releaseTime='" + releaseTime + '\'' +
                 ", del='" + del + '\'' +
+                ", postStatus=" + postStatus +
                 '}';
     }
 }

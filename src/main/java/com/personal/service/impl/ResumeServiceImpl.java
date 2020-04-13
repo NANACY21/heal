@@ -5,10 +5,12 @@ import com.personal.pojo.Resume;
 import com.personal.pojo.web.ResumeOutline;
 import com.personal.service.ResumeService;
 import com.personal.util.Util;
+import org.omg.CORBA.OBJ_ADAPTER;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 李箎
@@ -49,18 +51,24 @@ public class ResumeServiceImpl implements ResumeService {
 
     /**
      * 所有投递到本公司的简历概要列表
-     * @param companyId 公司id
-     * @param currentPage 当前页
-     * @param pageSize 每页条数
+     *
+     * @param map 公司id 当前页 每页条数
      * @return
      */
     @Override
-    public List<ResumeOutline> resumeList(long companyId, int currentPage, int pageSize) {
-        List<ResumeOutline> resumeList = mapper.resumeList(companyId, (currentPage - 1) * pageSize, pageSize);
+    public List<ResumeOutline> resumeList(Map<String, Object> map) {
+        //！！！
+        if (map.get("currentPage") != null && map.get("pageSize") != null) {
+            int currentPage = Integer.parseInt(map.get("currentPage").toString());
+            int pageSize = Integer.parseInt(map.get("pageSize").toString());
+            map.put("beginRowIndex", (currentPage - 1) * pageSize);
+            map.put("rowNum", pageSize);
+        }
+        List<ResumeOutline> resumeList = mapper.resumeList(map);
         //数据改动
         for (ResumeOutline outline : resumeList) {
-            int month = Util.differDate(outline.getBegindate(), outline.getEnddate(), "m");
-            outline.setWorkLength(month);
+            //int month = Util.differDate(outline.getBegindate(), outline.getEnddate(), "m");
+            //outline.setWorkLength(month);
             //生日->年龄
             int year = Util.differDate(outline.getBirthday(), Util.getTime(), "y");
             outline.setAge(year);
@@ -69,13 +77,23 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     /**
-     * 所有投递到本公司的简历概要列表长度
+     * 某职位的所有投递的简历
      *
-     * @param companyId
+     * @param positionId
      * @return
      */
     @Override
-    public int resumeListLength(long companyId) {
-        return mapper.resumeListLength(companyId);
+    public List<Resume> getResumeNameList(long positionId) {
+        return mapper.getResumeNameList(positionId);
+    }
+
+    /**
+     * 简历数
+     *
+     * @return
+     */
+    @Override
+    public List<Resume> resumeCount() {
+        return mapper.resumeCount();
     }
 }

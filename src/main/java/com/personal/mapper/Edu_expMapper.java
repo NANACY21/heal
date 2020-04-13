@@ -5,6 +5,13 @@ import com.personal.pojo.Edu_exp;
 import java.util.List;
 
 public interface Edu_expMapper {
+
+    /**
+     * 删除一个教育经历
+     *
+     * @param id 教育经历id
+     * @return
+     */
     int deleteByPrimaryKey(Long id);
 
     int insert(Edu_exp record);
@@ -19,6 +26,7 @@ public interface Edu_expMapper {
 
     /**
      * 简历的教育经历列表
+     *
      * @param resumeId
      * @return
      */

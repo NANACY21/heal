@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 系统消息生产者
+ * 系统消息通知生产者
  *
  * @author 李箎
  */
@@ -27,8 +27,8 @@ public class SystemMessageProducer {
      * @param topic
      * @param data
      */
-    public void send(String topic, Object data) {
+    public void send(String topic, String data) {
         //使用kafka模板发送信息 发到指定话题上
-        kafkaTemplate.send(topic, data.toString());
+        kafkaTemplate.send(topic, data);
     }
 }

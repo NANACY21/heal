@@ -16,6 +16,8 @@ public class ResumeOutline {
     private String location;
     //求职意向
     private String jobIntent;
+    //用户名
+    private String username;
     //个人评价
     private String selfeval;
     //学校
@@ -155,6 +157,14 @@ public class ResumeOutline {
         this.selfeval = selfeval;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     /**
      * 工作经历-入职时间
      * @return
@@ -204,6 +214,7 @@ public class ResumeOutline {
                 ", email='" + email + '\'' +
                 ", location='" + location + '\'' +
                 ", jobIntent='" + jobIntent + '\'' +
+                ", username='" + username + '\'' +
                 ", selfeval='" + selfeval + '\'' +
                 ", school='" + school + '\'' +
                 ", major='" + major + '\'' +

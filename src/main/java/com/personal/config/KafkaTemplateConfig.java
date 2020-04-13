@@ -2,6 +2,7 @@ package com.personal.config;
 
 import com.personal.kafkaService.tool.Util;
 import com.personal.pojo.msg.Message;
+import com.personal.util.ConstPool;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -74,8 +75,12 @@ public class KafkaTemplateConfig {
         return converter;
     }
 
-//    @Bean
-//    public NewTopic postResumes() {
-//        return new NewTopic("postResume", 1, (short) 1);
-//    }
+    /**
+     * 新话题得加这个，若已有话题则无需了！！！
+     * @return
+     */
+    @Bean
+    public NewTopic postResumes() {
+        return new NewTopic(ConstPool.KAFKA_TOPIC1, 1, (short) 1);
+    }
 }

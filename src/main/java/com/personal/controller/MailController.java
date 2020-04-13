@@ -54,7 +54,7 @@ public class MailController {
         //设置验证码失效时间
         session.setMaxInactiveInterval(60 * INT);
         //发邮件以告诉用户验证码
-        String message = "你的注册验证码为：" + checkCode + "，该验证码在：" + Util.getDate(new Date(), 5) + "前失效。";
+        String message = "你的注册验证码：" + checkCode + "，该验证码在：" + Util.getDate(new Date(), 5) + "前失效。";
         try {
             mailService.sendSimpleMail(users.getEmail(), "exodus - 用户注册验证码", message);
         } catch (Exception e) {

@@ -1,5 +1,6 @@
 package com.personal.kafkaService.tool;
 
+import com.personal.util.ConstPool;
 import org.apache.kafka.clients.admin.AdminClient;
 
 import java.util.Arrays;
@@ -19,6 +20,6 @@ public class TopicTool {
     }
 
     public static void main(String[] args) {
-        delTopic("postResume");
+        delTopic(ConstPool.KAFKA_TOPIC1);
     }
 }

@@ -1,6 +1,8 @@
 package com.personal.controller;
+import com.personal.service.UsersService;
 import com.personal.util.ConstPool;
 import com.personal.util.Util;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,9 +19,13 @@ import java.util.Map;
  */
 @Controller
 public class FileDealController {
-
+    @Autowired
+    UsersService service;
+    //请求的原因
     public static final String HEADPHOTO = "headphoto";
     public static final String RESUMEPHOTO = "resumephoto";
+    public static final String ADPHOTO = "adphoto";
+
     public static final String UPLOAD_FAIL = "上传失败";
     public static final String UPLOAD_SUCCESS = "上传成功";
     public static final String LOAD_PHOTO_FAIL = "加载照片失败";
@@ -41,23 +47,25 @@ public class FileDealController {
         String path;
         String username = map.get("username").toString();
         String reason = map.get("reason").toString();
+        //用户唯一id 19位随机数
+        String userId = service.getUserByUsername(username).getUserId();
         if (HEADPHOTO.equals(reason)) {
             path = ConstPool.HEAD_PHOTO_SAVE_PATH;
         } else if (RESUMEPHOTO.equals(reason)) {
             path = ConstPool.RESUME_PHOTO_SAVE_PATH;
+        } else if (ADPHOTO.equals(reason)) {
+            path = ConstPool.AD_PHOTO_SAVE_PATH;
         } else {
             return UPLOAD_FAIL;
         }
         if (file == null || file.getOriginalFilename() == null || file.getOriginalFilename().length() == 0) {
             return UPLOAD_FAIL;
         }
-        //获取上传的文件名
+        //获取上传的文件文件名
         String fileName = file.getOriginalFilename();
-        //新的文件名
-        String newFileName = username + fileName.substring(fileName.lastIndexOf("."));
+        //新的文件名 用户唯一id+后缀
+        String newFileName = userId + fileName.substring(fileName.lastIndexOf("."));
         File f = new File(path + newFileName);
-
-
         //原来有lichil.jpg，现在更换为lichil.png，原来的jpg删除
         //指向目录
         File dir = new File(path);
@@ -67,21 +75,20 @@ public class FileDealController {
             if (files[i].isFile()) {
                 //pictureName：lichil.jpg
                 String pictureName = files[i].getName();
-                if (pictureName.substring(0, pictureName.lastIndexOf(".")).equals(username)) {
+                if (pictureName.substring(0, pictureName.lastIndexOf(".")).equals(userId)) {
                     files[i].delete();
                 }
             }
         }
-
-
-
-
         if (f.exists()) {
             f.delete();
             f = new File(path + newFileName);
         }
         try {
             file.transferTo(f);
+            if (f.getName().endsWith(".png") && path.equals(ConstPool.AD_PHOTO_SAVE_PATH)) {
+                Util.pngToJpg(f);
+            }
         } catch (IOException e) {
             e.printStackTrace();
             return UPLOAD_FAIL;
@@ -101,6 +108,8 @@ public class FileDealController {
         String path;
         String username = map.get("username").toString();
         String reason = map.get("reason").toString();
+        //用户唯一id 19位随机数
+        String userId = service.getUserByUsername(username).getUserId();
         if (HEADPHOTO.equals(reason)) {
             path = ConstPool.HEAD_PHOTO_SAVE_PATH;
         } else if (RESUMEPHOTO.equals(reason)) {
@@ -116,7 +125,7 @@ public class FileDealController {
             if (files[i].isFile()) {
                 //pictureName：lichil.jpg
                 String pictureName = files[i].getName();
-                if (pictureName.substring(0, pictureName.lastIndexOf(".")).equals(username)) {
+                if (pictureName.substring(0, pictureName.lastIndexOf(".")).equals(userId)) {
                     return pictureName;
                 }
             }
@@ -154,7 +163,7 @@ public class FileDealController {
      */
     @RequestMapping("/readJSONFile")
     @ResponseBody
-    public String readJSONFile(@RequestBody long companyId) {
+    public String readJSONFile(@RequestBody String companyId) {
         return Util.readJsonFileTool(new File(ConstPool.JSON_PATH, companyId + ".json"));
     }
 }

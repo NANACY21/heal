@@ -5,9 +5,15 @@
         <id column="id" property="id" jdbcType="BIGINT" />
         <result column="user_id" property="userId" jdbcType="BIGINT" />
         <result column="position_id" property="positionId" jdbcType="BIGINT" />
+        <result column="status" property="status" jdbcType="INTEGER" />
     </resultMap>
     <sql id="Base_Column_List" >
-        id, user_id userId, position_id positionId
+        id, user_id userId, position_id positionId,status
+    </sql>
+    <sql id="limitVal">
+        <if test="beginRowIndex!=null and rowNum!=null">
+            limit #{beginRowIndex},#{rowNum}
+        </if>
     </sql>
 
     <!--一些字段-->
@@ -22,21 +28,38 @@
         from job_apply
         where id = #{id,jdbcType=BIGINT}
     </select>
-    <select id="postList" resultType="com.personal.pojo.Position" parameterType="Long">
-        select <include refid="Position_Column_List" />
-        from job_apply,position where job_apply.user_id=#{userId,jdbcType=BIGINT} and job_apply.position_id=position.id
+    <!--求职者的投递箱 大于等于-->
+    <select id="postList" resultType="com.personal.pojo.Position" parameterType="hashmap">
+        select <include refid="Position_Column_List" />,job_apply.status postStatus
+        from job_apply,position where job_apply.user_id=#{userId} and job_apply.position_id=position.id
+        and job_apply.status &gt;= #{postStatus}
+        <include refid="limitVal"/>
+    </select>
+    <select id="postList2" resultType="com.personal.pojo.Position" parameterType="hashmap">
+        select <include refid="Position_Column_List" />,job_apply.status postStatus
+        from job_apply,position where job_apply.user_id=#{userId} and job_apply.position_id=position.id
+        and job_apply.status = #{postStatus}
+        <include refid="limitVal"/>
     </select>
     <select id="isPosted" resultType="com.personal.pojo.Job_apply" parameterType="com.personal.pojo.Job_apply">
         select * from job_apply where user_id = #{userId,jdbcType=BIGINT} and position_id = #{positionId,jdbcType=BIGINT}
+    </select>
+    <select id="hasPostList" resultType="com.personal.pojo.Position" parameterType="Long">
+        select <include refid="Position_Column_List" />
+        from position where id in
+        (select apply.position_id
+        from job_apply apply where apply.position_id in
+        (select id from position where company_id=#{companyId}) group by apply.position_id)
+        <include refid="limitVal"/>
     </select>
     <delete id="deleteByPrimaryKey" parameterType="Long" >
         delete from job_apply
         where id = #{id,jdbcType=BIGINT}
     </delete>
     <insert id="insert" parameterType="com.personal.pojo.Job_apply" >
-        insert into job_apply (id, user_id, position_id
+        insert into job_apply (id, user_id, position_id, status
         )
-        values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{positionId,jdbcType=BIGINT}
+        values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{positionId,jdbcType=BIGINT}, #{status,jdbcType=INTEGER}
                )
     </insert>
     <insert id="insertSelective" parameterType="com.personal.pojo.Job_apply" >
@@ -51,6 +74,9 @@
             <if test="positionId != null" >
                 position_id,
             </if>
+            <if test="status != null">
+                status,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides="," >
             <if test="id != null" >
@@ -61,6 +87,9 @@
             </if>
             <if test="positionId != null" >
                 #{positionId,jdbcType=BIGINT},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=INTEGER},
             </if>
         </trim>
     </insert>
@@ -73,13 +102,17 @@
             <if test="positionId != null" >
                 position_id = #{positionId,jdbcType=BIGINT},
             </if>
+            <if test="status != null">
+                status = #{status,jdbcType=INTEGER},
+            </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
     <update id="updateByPrimaryKey" parameterType="com.personal.pojo.Job_apply" >
         update job_apply
         set user_id = #{userId,jdbcType=BIGINT},
-            position_id = #{positionId,jdbcType=BIGINT}
+            position_id = #{positionId,jdbcType=BIGINT},
+            status = #{status,jdbcType=INTEGER}
         where id = #{id,jdbcType=BIGINT}
     </update>
 </mapper>

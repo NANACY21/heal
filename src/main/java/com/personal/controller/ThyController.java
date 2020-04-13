@@ -45,6 +45,7 @@ public class ThyController {
         request.setAttribute("msg", "request message");
         session.setAttribute("smsg", "session message");
         model.addAttribute("pic", "http://pic33.nipic.com/20131007/13639685_123501617185_2.jpg");
-        return "index";//跳到该html
+        //跳到该html
+        return "index";
     }
 }

@@ -43,29 +43,98 @@
         id, name, company_id companyId, user_id userId, detail,city, need_num needNum, work_exp workExp, edu_bg eduBg, salary,
     salary_float salaryFloat, workType worktype, faceTo faceto,status,releaseTime
     </sql>
+
+    <!--已发布职位卡片列表-->
+    <sql id="Release_Position_List">
+        select
+        position.id, position.name, position.company_id companyId, position.user_id userId,uu.username username,uu.auth auth, position.detail,position.city, position.need_num needNum, position.work_exp workExp, position.edu_bg eduBg, position.salary,
+            position.salary_float salaryFloat, position.workType worktype, position.faceTo faceto,position.status,position.releaseTime,trade.name trade
+        from position,position_enum pe1,position_enum pe2,company,trade,users uu
+        where position.status = 1
+        and position.name=pe1.name and pe1.parent_id=pe2.id and pe2.trade_id=trade.id
+        and position.company_id=company.id and position.user_id=uu.id
+    </sql>
+    <sql id="limitVal">
+        <if test="status!=null">
+            and status = #{status}
+        </if>
+        <if test="beginRowIndex!=null and rowNum!=null">
+            limit #{beginRowIndex},#{rowNum}
+        </if>
+    </sql>
+
+    <!--职位 查询条件！！！-->
+    <sql id="position_query_condition">
+        <if test="city!=null">
+            and
+            <foreach collection="city" item="onecity" separator="or"
+                     open="(" close=")">
+                position.city like CONCAT('%', #{onecity}, '%')
+            </foreach>
+        </if>
+        <if test="workExp!=null">
+            and
+            <foreach collection="workExp" item="oneworkexp" separator="or"
+                     open="(" close=")">
+                position.work_exp like CONCAT('%', #{oneworkexp}, '%')
+            </foreach>
+        </if>
+        <if test="eduBg!=null">
+            and
+            <foreach collection="eduBg" item="oneedubg" separator="or"
+                     open="(" close=")">
+                position.edu_bg like CONCAT('%', #{oneedubg}, '%')
+            </foreach>
+        </if>
+        <if test="beginRowIndex!=null and rowNum!=null">
+            order by position.releaseTime desc limit #{beginRowIndex},#{rowNum}
+        </if>
+    </sql>
     <select id="selectByPrimaryKey" resultType="com.personal.pojo.Position" parameterType="Long" >
         select
         <include refid="Base_Column_List" />
         from position
         where id = #{id,jdbcType=BIGINT}
     </select>
-    <select id="selectByCompanyId" parameterType="Long" resultType="com.personal.pojo.Position">
+    <select id="selectByCompanyId" parameterType="hashmap" resultType="com.personal.pojo.Position">
         select
-        <include refid="Base_Column_List" />
-        from position where company_id = #{companyId,jdbcType=BIGINT}
+        <include refid="Base_Column_List"/>
+        from position where company_id = #{companyId}
+        <include refid="limitVal"/>
     </select>
-    <select id="selectByStatus" resultType="com.personal.pojo.web.ReleasePosition">
-        select
-            position.id, position.name, position.company_id companyId, position.user_id userId, position.detail,position.city, position.need_num needNum, position.work_exp workExp, position.edu_bg eduBg, position.salary,
-            position.salary_float salaryFloat, position.workType worktype, position.faceTo faceto,position.status,position.releaseTime,trade.name trade
-        from position,position_enum pe1,position_enum pe2,company,trade
-        where position.status = #{param1} and position.name=pe1.name and pe1.parent_id=pe2.id and pe2.trade_id=trade.id
-        and position.company_id=company.id order by position.releaseTime desc limit 0,#{param2}
+
+    <!--根据查询条件 求职者查询已发布的职位列表-->
+    <select id="selectByStatus" resultType="com.personal.pojo.web.ReleasePosition" parameterType="hashmap">
+        <include refid="Release_Position_List"/>
+        <include refid="position_query_condition"/>
+    </select>
+
+    <!--某个人投递到某公司的职位名称列表-->
+    <select id="getPositionNameList" resultType="com.personal.pojo.Position">
+        select apply.position_id id,pp.name name
+        from job_apply apply,position pp
+        where apply.position_id in
+        (select id from position where company_id=#{param2})
+        and apply.user_id=#{param1}
+        and apply.position_id=pp.id
+    </select>
+    <!--收藏的职位列表-->
+    <select id="collectPositionList" resultType="com.personal.pojo.web.ReleasePosition" parameterType="java.util.List">
+        <include refid="Release_Position_List"/>
+        and position.id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <select id="getPositionByName" resultType="com.personal.pojo.Position">
+        select <include refid="Base_Column_List" />
+        from position where name=#{param1} and company_id=#{param2};
     </select>
     <delete id="deleteByPrimaryKey" parameterType="Long" >
         delete from position
         where id = #{id,jdbcType=BIGINT}
     </delete>
+
     <insert id="insert" parameterType="com.personal.pojo.Position" >
         insert into position (id, name, company_id,
                               user_id, detail, city, need_num,
@@ -79,7 +148,7 @@
                 #{faceto,jdbcType=VARCHAR},#{status,jdbcType=INTEGER},#{releaseTime,jdbcType=TIMESTAMP});
 
     </insert>
-    <insert id="insertSelective" parameterType="com.personal.pojo.Position" >
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="com.personal.pojo.Position" >
         insert into position
         <trim prefix="(" suffix=")" suffixOverrides="," >
             <if test="id != null" >
@@ -241,5 +310,24 @@
             status = #{status,jdbcType=INTEGER},
             releaseTime = #{releaseTime,jdbcType=TIMESTAMP}
         where id = #{id,jdbcType=BIGINT}
+    </update>
+    <!--招聘者改变求职者职位的投递状态！！！ lt 小于-->
+    <update id="changePostStatus">
+        update job_apply
+        set status = #{param3}
+        where user_id = #{param1} and position_id in
+        (select id from position where company_id = #{param2})
+        and status &lt; #{param3}
+    </update>
+    <update id="changePostStatus2">
+        update job_apply
+        set status = #{param3}
+        where user_id = #{param1} and position_id in
+        (select id from position where company_id = #{param2})
+    </update>
+    <update id="deletePost" parameterType="hashmap">
+        update job_apply
+        set status=-1
+        where user_id = #{userId} and position_id = #{positionId}
     </update>
 </mapper>

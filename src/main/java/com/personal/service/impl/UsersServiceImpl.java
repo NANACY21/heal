@@ -7,6 +7,9 @@ import com.personal.util.ConstPool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
 @SuppressWarnings("ALL")
 @Service
 @Transactional
@@ -67,6 +70,7 @@ public class UsersServiceImpl implements UsersService {
         users.setEmail(users1.getEmail());
         users.setCompanyId(users1.getCompanyId());
         users.setUserType(users1.getUserType());
+        users.setAuth(users1.getAuth());
         return ConstPool.LOGIN_SUCCESS;
     }
 
@@ -102,5 +106,21 @@ public class UsersServiceImpl implements UsersService {
     @Override
     public Users getUserById(long userId) {
         return mapper.selectByPrimaryKey(userId);
+    }
+
+    /**
+     * 通过用户名查询用户
+     *
+     * @param username
+     * @return
+     */
+    @Override
+    public Users getUserByUsername(String username) {
+        return mapper.selectByUsername(username);
+    }
+
+    @Override
+    public List<Integer> userCount() {
+        return mapper.userCount();
     }
 }

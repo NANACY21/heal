@@ -42,6 +42,24 @@ public class Project_expServiceImpl implements Project_expService {
     }
 
     /**
+     * 删除一个项目经历
+     *
+     * @param projectExpId 项目经历id
+     * @return
+     */
+    @Override
+    public String delProject_exp(long projectExpId) {
+        int i = mapper.deleteByPrimaryKey(projectExpId);
+        String temp = "删除项目经历";
+        if (i > 0) {
+            temp += "成功";
+        } else {
+            temp += "失败";
+        }
+        return temp;
+    }
+
+    /**
      * 某个简历的项目经历列表
      *
      * @param resumeId

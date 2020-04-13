@@ -1,5 +1,7 @@
 package com.personal.pojo;
 
+import package1.Tool;
+
 public class User {
     private Integer id;
     private String name;
@@ -27,4 +29,5 @@ public class User {
     public void setName(String name) {
         this.name = name;
     }
+
 }

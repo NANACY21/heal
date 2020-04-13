@@ -1,8 +1,10 @@
 package com.personal.service;
 
+import com.personal.pojo.Position;
 import com.personal.pojo.Resume;
 import com.personal.pojo.web.ResumeOutline;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 李箎
@@ -19,21 +21,26 @@ public interface ResumeService {
      * @param userId 用户id
      * @return 该用户的简历基本信息
      */
-    public Resume getResumeByUserId(long userId);
+    Resume getResumeByUserId(long userId);
 
     /**
      * 所有投递到本公司的简历概要列表
-     * @param companyId 公司id
-     * @param currentPage 当前页
-     * @param pageSize 每页条数
+     *
+     * @param map 公司id 当前页 每页条数
      * @return
      */
-    List<ResumeOutline> resumeList(long companyId, int currentPage, int pageSize);
+    List<ResumeOutline> resumeList(Map<String, Object> map);
 
     /**
-     * 所有投递到本公司的简历概要列表长度
-     * @param companyId
+     * 某职位的所有投递的简历
+     * @param positionId
      * @return
      */
-    int resumeListLength(long companyId);
+    List<Resume> getResumeNameList(long positionId);
+
+    /**
+     * 简历数
+     * @return
+     */
+    List<Resume> resumeCount();
 }

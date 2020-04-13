@@ -1,5 +1,8 @@
 package com.personal.pojo;
 
+/**
+ * @author 李箎
+ */
 public class Employee {
     private Long id;
 
@@ -8,6 +11,7 @@ public class Employee {
     private String email;
 
     private String name;
+    private String auth;
 
     public Long getId() {
         return id;
@@ -41,6 +45,14 @@ public class Employee {
         this.name = name == null ? null : name.trim();
     }
 
+    public String getAuth() {
+        return auth;
+    }
+
+    public void setAuth(String auth) {
+        this.auth = auth;
+    }
+
     @Override
     public String toString() {
         return "Employee{" +
@@ -48,6 +60,7 @@ public class Employee {
                 ", companyId=" + companyId +
                 ", email='" + email + '\'' +
                 ", name='" + name + '\'' +
+                ", auth='" + auth + '\'' +
                 '}';
     }
 }

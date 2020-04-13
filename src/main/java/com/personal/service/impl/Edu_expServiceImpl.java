@@ -42,6 +42,21 @@ public class Edu_expServiceImpl implements Edu_expService {
     }
 
     /**
+     * 删除一个教育经历
+     *
+     * @param eduExpId 教育经历id
+     * @return
+     */
+    @Override
+    public String delEdu_exp(long eduExpId) {
+        int i = mapper.deleteByPrimaryKey(eduExpId);
+        if (i > 0) {
+            return "删除该教育经历成功";
+        }
+        return "删除该教育经历失败";
+    }
+
+    /**
      * 某个简历的教育经历列表
      *
      * @param resumeId

@@ -42,15 +42,18 @@ public class GeneralController {
             String login = service.login(users);
             if (ConstPool.LOGIN_SUCCESS.equals(login)) {
                 users.setPassword(null);
-                //这时添加session
-                HttpSession session = request.getSession();
-                session.setAttribute(ConstPool.SESSION_KEY1, users.getUsername());
-                session.setAttribute(ConstPool.SESSION_KEY2, users.getPassword());
+                //这时添加session ！！！
+                if (request.getSession(false) == null) {
+                    HttpSession session = request.getSession();
+                    session.setAttribute(ConstPool.SESSION_KEY1, users.getUsername());
+                    session.setAttribute(ConstPool.SESSION_KEY2, users.getPassword());
+                }
                 System.out.println("用户在本PC的登录状态还在，发到前端的数据：");
                 System.out.println(users);
+                return users;
             }
         }
-        return users;
+        return null;
     }
 
     /**用这个有问题
@@ -61,11 +64,10 @@ public class GeneralController {
     @RequestMapping("/getCurrentUser")
     @ResponseBody
     public Users getCurrentUser(HttpServletRequest request) {
-        System.out.println("888999777");
         HttpSession session = request.getSession();
         String username = session.getAttribute(ConstPool.SESSION_KEY1).toString();
         String password = session.getAttribute(ConstPool.SESSION_KEY2).toString();
-        System.out.println(username + password + "888999777");
+        System.out.println(username + password);
         Users users = new Users(username, password, null);
         System.out.println(users);
         String login = service.login(users);

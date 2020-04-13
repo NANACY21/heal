@@ -42,6 +42,24 @@ public class Work_expServiceImpl implements Work_expService {
     }
 
     /**
+     * 删除一个工作经历
+     *
+     * @param workExpId 工作经历id
+     * @return
+     */
+    @Override
+    public String delWork_exp(long workExpId) {
+        int i = mapper.deleteByPrimaryKey(workExpId);
+        String temp = "删除工作经历";
+        if (i > 0) {
+            temp += "成功";
+        } else {
+            temp += "失败";
+        }
+        return temp;
+    }
+
+    /**
      * 某个简历的工作经历列表
      *
      * @param resumeId

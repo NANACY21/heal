@@ -5,13 +5,21 @@ package com.personal.pojo.web;
  */
 public class ReleasePosition {
 
+    /**
+     * 职位信息
+     */
     private Long id;
 
     private String name;
 
     private Long companyId;
 
+    //发布该职位的用户id
     private Long userId;
+    //发布该职位的用户名
+    private String username;
+    //发布该职位的用户认证信息
+    private String auth;
 
     private String detail;
     private String city;
@@ -72,6 +80,14 @@ public class ReleasePosition {
         return id;
     }
 
+    public String getAuth() {
+        return auth;
+    }
+
+    public void setAuth(String auth) {
+        this.auth = auth;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -98,6 +114,14 @@ public class ReleasePosition {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getDetail() {
@@ -203,6 +227,8 @@ public class ReleasePosition {
                 ", name='" + name + '\'' +
                 ", companyId=" + companyId +
                 ", userId=" + userId +
+                ", username='" + username + '\'' +
+                ", auth='" + auth + '\'' +
                 ", detail='" + detail + '\'' +
                 ", city='" + city + '\'' +
                 ", needNum='" + needNum + '\'' +

@@ -17,6 +17,10 @@ public class Users {
     private String userId;
 
     private String email;
+    /**
+     * 用户身份认证信息
+     */
+    private String auth;
 
     /**
      * 验证码存进Redis
@@ -144,6 +148,14 @@ public class Users {
         this.newPasswordConfirm = newPasswordConfirm;
     }
 
+    public String getAuth() {
+        return auth;
+    }
+
+    public void setAuth(String auth) {
+        this.auth = auth;
+    }
+
     @Override
     public String toString() {
         return "Users{" +
@@ -154,6 +166,7 @@ public class Users {
                 ", userType=" + userType +
                 ", userId='" + userId + '\'' +
                 ", email='" + email + '\'' +
+                ", auth='" + auth + '\'' +
                 ", code='" + code + '\'' +
                 ", loginMode='" + loginMode + '\'' +
                 ", newPassword='" + newPassword + '\'' +

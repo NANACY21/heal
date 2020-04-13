@@ -4,6 +4,7 @@ import com.personal.pojo.Resume;
 import com.personal.pojo.web.ResumeOutline;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ResumeMapper {
     int deleteByPrimaryKey(Long id);
@@ -29,17 +30,17 @@ public interface ResumeMapper {
 
     /**
      * 所有投递到本公司的简历概要列表
-     * @param companyId
-     * @param beginRowIndex
-     * @param rowNum
+     * @param map
      * @return
      */
-    List<ResumeOutline> resumeList(Long companyId, int beginRowIndex, int rowNum);
+    List<ResumeOutline> resumeList(Map<String, Object> map);
 
     /**
-     * 所有投递到本公司的简历概要列表的长度
-     * @param companyId
+     * 某职位的所有投递的简历
+     * @param positionId
      * @return
      */
-    int resumeListLength(Long companyId);
+    List<Resume> getResumeNameList(Long positionId);
+
+    List<Resume> resumeCount();
 }

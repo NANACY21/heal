@@ -79,7 +79,7 @@ public class CookieTool {
     public static String getCookieValueByName(HttpServletRequest request, String name) {
         Map<String, String> cookieMap = readCookieMap(request);
         if (cookieMap.containsKey(name)) {
-            String cookieValue = (String) cookieMap.get(name);
+            String cookieValue = cookieMap.get(name);
             return cookieValue;
         } else {
             return null;

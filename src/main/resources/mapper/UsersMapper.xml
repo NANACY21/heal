@@ -9,10 +9,11 @@
         <result column="user_type" jdbcType="INTEGER" property="userType" />
         <result column="user_id" jdbcType="VARCHAR" property="userId" />
         <result column="email" jdbcType="VARCHAR" property="email" />
+        <result column="auth" jdbcType="VARCHAR" property="auth" />
     </resultMap>
-<!--    起别名以使结果集映射到实体类-->
+    <!--起别名以使结果集映射到实体类-->
     <sql id="Base_Column_List">
-    id, company_id companyId, username, password, user_type userType, user_id userId,email
+    id, company_id companyId, username, password, user_type userType, user_id userId,email,auth
     </sql>
     <select id="selectByPrimaryKey" parameterType="Long" resultType="com.personal.pojo.Users">
         select
@@ -22,7 +23,7 @@
     </select>
     <select id="selectByUsername" parameterType="java.lang.String" resultType="com.personal.pojo.Users">
         select
-        <include refid="Base_Column_List"></include>
+        <include refid="Base_Column_List"/>
         from users
         where username = #{username,jdbcType=VARCHAR}
     </select>
@@ -32,17 +33,20 @@
         from users
         where email = #{email,jdbcType=VARCHAR}
     </select>
+    <select id="userCount" resultType="java.lang.Integer">
+        select count(*) from users group by user_type;
+    </select>
     <delete id="deleteByPrimaryKey" parameterType="Long">
     delete from users
     where id = #{id,jdbcType=BIGINT}
   </delete>
     <insert id="insert" parameterType="com.personal.pojo.Users">
     insert into users (id, company_id, username, 
-      password, user_type, user_id,email
+      password, user_type, user_id,email,auth
       )
     values (#{id,jdbcType=BIGINT}, #{companyId,jdbcType=BIGINT}, #{username,jdbcType=VARCHAR}, 
       #{password,jdbcType=VARCHAR}, #{userType,jdbcType=INTEGER}, #{userId,jdbcType=VARCHAR},
-      #{email,jdbcType=VARCHAR}
+      #{email,jdbcType=VARCHAR},#{auth,jdbcType=VARCHAR}
       )
   </insert>
     <insert id="insertSelective" parameterType="com.personal.pojo.Users">
@@ -69,6 +73,9 @@
             <if test="email != null">
                 email,
             </if>
+            <if test="auth != null">
+                auth,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -91,6 +98,9 @@
             </if>
             <if test="email != null">
                 #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="auth != null">
+                #{auth,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -115,6 +125,9 @@
             <if test="email != null">
                 email = #{email,jdbcType=VARCHAR},
             </if>
+            <if test="auth != null">
+                auth = #{auth,jdbcType=VARCHAR},
+            </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
@@ -125,7 +138,8 @@
       password = #{password,jdbcType=VARCHAR},
       user_type = #{userType,jdbcType=INTEGER},
       user_id = #{userId,jdbcType=VARCHAR},
-      email = #{email,jdbcType=VARCHAR}
+      email = #{email,jdbcType=VARCHAR},
+      auth = #{auth,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

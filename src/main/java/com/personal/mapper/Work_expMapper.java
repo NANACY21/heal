@@ -6,6 +6,11 @@ import com.personal.pojo.Work_exp;
 import java.util.List;
 
 public interface Work_expMapper {
+    /**
+     * 删除一个工作经历
+     * @param id 工作经历id
+     * @return
+     */
     int deleteByPrimaryKey(Long id);
 
     int insert(Work_exp record);
@@ -22,6 +27,7 @@ public interface Work_expMapper {
 
     /**
      * 简历的工作经历列表
+     *
      * @param resumeId
      * @return
      */

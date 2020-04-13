@@ -7,6 +7,11 @@ import java.util.List;
  * 项目经历
  */
 public interface Project_expMapper {
+    /**
+     * 删除一个项目经历
+     * @param id 项目经历id
+     * @return
+     */
     int deleteByPrimaryKey(Long id);
 
     int insert(Project_exp record);
@@ -23,6 +28,7 @@ public interface Project_expMapper {
 
     /**
      * 简历的项目经历列表
+     *
      * @param resumeId
      * @return
      */

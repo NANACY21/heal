@@ -1,5 +1,4 @@
 package com.personal.aspect;
-
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -9,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -53,21 +51,27 @@ public class WebLogAspect {
         ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (sra != null) {
             HttpServletRequest request = sra.getRequest();
-            //请求内容:
-            logger.info("##########浏览器的URL : " + request.getRequestURL().toString());
-            logger.info("##########请求的HTTP方法HTTP_METHOD : " + request.getMethod());
-            logger.info("##########发出请求的客户端的IP地址 : " + request.getRemoteAddr());
+            System.out.println("##########浏览器请求内容##########");
+            logger.info("浏览器的URL " + request.getRequestURL().toString());
+            logger.info("请求的HTTP方法 " + request.getMethod());
+            logger.info("发出请求的客户端的IP地址 " + request.getRemoteAddr());
             //某一参数为数组可能不能好好打印
-            logger.info("##########前端提交的数据THE ARGS OF THE CONTROLLER : " + Arrays.toString(joinPoint.getArgs()));
-            for (int i = 0; i < joinPoint.getArgs().length; i++) {
-                logger.info("##########前端提交的数据控制器参数" + i + 1 + " : " + joinPoint.getArgs()[i].toString());
+            Object[] args = joinPoint.getArgs();
+            if (args.length == 0) {
+                logger.info("前端未提交数据");
+            } else {
+                for (int i = 0; i < args.length; i++) {
+                    logger.info("前端提交的数据(控制器参数)" + i + " " + args[i].toString());
+                }
             }
         }
         //该请求访问的包名及类名
-        logger.info("##########前端请求执行的包+类名 : " + joinPoint.getSignature().getDeclaringTypeName());
+        logger.info("前端请求执行的包+类名 " + joinPoint.getSignature().getDeclaringTypeName());
         //该请求执行的方法名
-        logger.info("##########前端请求执行的方法名CLASS_METHOD : " + joinPoint.getSignature().getName());
-        //logger.info("################TARGET: " + joinPoint.getTarget());//返回的是需要加强的目标类的对象
-        //logger.info("################THIS: " + joinPoint.getThis());//返回的是经过加强后的代理类的对象
+        logger.info("前端请求执行的方法名 " + joinPoint.getSignature().getName());
+        //返回的是需要加强的目标类的对象
+        //logger.info("TARGET: " + joinPoint.getTarget());
+        //返回的是经过加强后的代理类的对象
+        //logger.info("THIS: " + joinPoint.getThis());
     }
 }

@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 李箎
@@ -35,15 +37,52 @@ public class Job_applyController {
     }
 
     /**
-     * 投递箱 申请的职位列表
+     * 某求职者的投递箱 申请的职位列表
      * 读redis里的职位列表
-     * @param userId
+     *
+     * @param map userId，当前页，页大小
      * @return
      */
     @RequestMapping("/postList")
     @ResponseBody
-    public List<Position> postList(@RequestBody long userId) {
-        return service.postList(userId);
+    public List<Position> postList(@RequestBody Map<String, Object> map) {
+        return service.postList(map);
+    }
+
+    /**
+     * 某求职者的投递箱 申请的职位列表长度
+     * 读redis里的职位列表
+     *
+     * @param map userId，当前页，页大小
+     * @return
+     */
+    @RequestMapping("/postListLength")
+    @ResponseBody
+    public int postListLength(@RequestBody Map<String, Object> map) {
+        return service.postList(map).size();
+    }
+
+    /**
+     * 某公司所有有投递的职位的列表
+     *
+     * @param map companyId 当前页 页大小
+     * @return
+     */
+    @RequestMapping("/hasPostList")
+    @ResponseBody
+    public List<Position> hasPostList(@RequestBody Map<String, Object> map) {
+        return service.hasPostList(map);
+    }
+
+    /**
+     * 某公司所有有投递的职位的列表长度
+     * @param map
+     * @return
+     */
+    @RequestMapping("/hasPostListLength")
+    @ResponseBody
+    public int hasPostListLength(@RequestBody Map<String, Object> map) {
+        return service.hasPostList(map).size();
     }
 
     /**移除投递记录

@@ -2,6 +2,9 @@ package com.personal.service;
 
 import com.personal.pojo.User;
 import com.personal.pojo.Users;
+import org.apache.kafka.common.protocol.types.Field;
+
+import java.util.List;
 
 /**
  * @author 李箎
@@ -51,4 +54,13 @@ public interface UsersService {
      * @return
      */
     Users getUserById(long userId);
+
+    /**
+     * 通过用户名查询用户
+     * @param username
+     * @return
+     */
+    Users getUserByUsername(String username);
+
+    List<Integer> userCount();
 }
