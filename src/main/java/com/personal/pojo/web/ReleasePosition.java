@@ -14,10 +14,12 @@ public class ReleasePosition {
 
     private Long companyId;
 
-    //发布该职位的用户id
+    //发布该职位的用户id MySQL主键
     private Long userId;
     //发布该职位的用户名
     private String username;
+    //发布该职位的用户号 19位随机数
+    private String userLid;
     //发布该职位的用户认证信息
     private String auth;
 
@@ -78,6 +80,14 @@ public class ReleasePosition {
 
     public Long getId() {
         return id;
+    }
+
+    public String getUserLid() {
+        return userLid;
+    }
+
+    public void setUserLid(String userLid) {
+        this.userLid = userLid;
     }
 
     public String getAuth() {
@@ -228,6 +238,7 @@ public class ReleasePosition {
                 ", companyId=" + companyId +
                 ", userId=" + userId +
                 ", username='" + username + '\'' +
+                ", userLid='" + userLid + '\'' +
                 ", auth='" + auth + '\'' +
                 ", detail='" + detail + '\'' +
                 ", city='" + city + '\'' +

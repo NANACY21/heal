@@ -228,7 +228,9 @@ public class UsersController {
 
     /**
      * 修改用户名
-     * Redis、Kafka也需要修改
+     * Redis也需要修改
+     * Kafka不需要修改
+     * Cookie存的用户名也得改
      * 头像、简历照片文件名不用修改
      * ES中有数据就改 没有就不改
      * 前端空值-长度为0字符串 不存在的属性-null
@@ -238,7 +240,9 @@ public class UsersController {
      */
     @RequestMapping("/updateUsername")
     @ResponseBody
-    public String updateUsername(@RequestBody Users users) {
+    public String updateUsername(@RequestBody Users users, HttpServletRequest request, HttpServletResponse response) {
+        CookieTool.batchDeleteCookie(request, response, ConstPool.SESSION_KEY1);
+        CookieTool.batchAddCookie(response, ConstPool.SESSION_KEY1, users.getUsername());
         return "用户名修改" + service.updateUsers(users);
     }
 
@@ -251,12 +255,18 @@ public class UsersController {
     @ResponseBody
     public String sayHello(@RequestBody Message message) {
         System.out.println(message);
+        //发送者用户名
+        String from = message.getFrom();
         Users users = service.selectByEmail(message.getTo());
         if (null == users) {
             return message.getTo() + "邮箱的用户不存在";
         }
+        //接收者用户名
+        String to = users.getUsername();
         //发送这条消息
-        Message message1 = new Message(message.getFrom(), users.getUsername(), message.getMsgContent());
+        Message message1 = new Message(from, to, message.getContent());
+        message1.setFromId(service.getUserIdByUsername(from));
+        message1.setToId(service.getUserIdByUsername(to));
         producer.send(ConstPool.KAFKA_TOPIC1, com.personal.util.Util.objectToJson(message1));
         return ConstPool.SUCCESS;
     }
@@ -289,18 +299,17 @@ public class UsersController {
     /**
      * 消息列表
      *
-     * @param map
-     * @return
+     * @param map 我的用户名 对方用户名
+     * @return map类型 key 用户名
      */
     @RequestMapping("/messageList")
     @ResponseBody
     public Map<String, List<Message>> messageList(@RequestBody Map<String, Object> map) {
+        //我的用户名
         String username = map.get("username").toString();
         Map<String, List<Message>> msgMap = consumer.receiveLatestMessage(Util.getKafkaConfigProp(), ConstPool.KAFKA_TOPIC1, 100, username);
-        if (msgMap.size() == 0) {
-            msgMap = new HashMap<>();
-        }
         if (map.size() != 1) {
+            //对方用户名
             String withUsername = map.get("withUsername").toString();
             if (null != withUsername && withUsername.length() != 0 && !msgMap.containsKey(withUsername)) {
                 msgMap.put(withUsername, new ArrayList<>());

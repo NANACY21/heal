@@ -276,8 +276,15 @@ public class PositionServiceImpl implements PositionService {
         if (usersMapper.selectByUsername(username).getUserType() != 1) {
             return new ArrayList<>();
         }
+        //读redis
         List<String> positionIdList = redisUtil.getListVal(username + ConstPool.COLLECT_POSITION);
+        if (positionIdList == null || positionIdList.size() == 0) {
+            return new ArrayList<>();
+        }
         List<ReleasePosition> collectPositionList = mapper.collectPositionList(positionIdList);
+        if (collectPositionList == null || collectPositionList.size() == 0) {
+            return new ArrayList<>();
+        }
         //给公司名称、公司信息赋上值
         for (ReleasePosition rp : collectPositionList) {
             String jsonStr = Util.readJsonFileTool(new File(ConstPool.JSON_PATH, rp.getCompanyId() + ".json"));
@@ -315,14 +322,14 @@ public class PositionServiceImpl implements PositionService {
     /**
      * 从投递箱移除一个职位
      *
-     * @param map
+     * @param map key 值 key 数组
      * @return
      */
     @Override
     public String deletePost(Map<String, Object> map) {
         Long userId = Long.valueOf(map.get("userId").toString());
-        Long positionId = Long.valueOf(map.get("positionId").toString());
-        mapper.deletePost(map);
-        return "ok";
+        List<Long> positionIds = (List<Long>) map.get("positionIds");
+        int i = mapper.deletePost(map);
+        return i > 0 ? "ok" : "error";
     }
 }

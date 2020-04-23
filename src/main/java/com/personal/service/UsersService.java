@@ -1,8 +1,5 @@
 package com.personal.service;
-
-import com.personal.pojo.User;
 import com.personal.pojo.Users;
-import org.apache.kafka.common.protocol.types.Field;
 
 import java.util.List;
 
@@ -42,7 +39,7 @@ public interface UsersService {
     String updateUsers(Users users);
 
     /**
-     * 邮箱查询用户
+     * 通过邮箱查询用户
      * @param email
      * @return
      */
@@ -57,10 +54,26 @@ public interface UsersService {
 
     /**
      * 通过用户名查询用户
+     *
      * @param username
      * @return
      */
     Users getUserByUsername(String username);
 
     List<Integer> userCount();
+
+    /**
+     * 通过用户名得到userId
+     *
+     * @param username
+     * @return
+     */
+    String getUserIdByUsername(String username);
+
+    /**
+     * 通过userId得到用户名
+     * @param userId
+     * @return
+     */
+    String getUsernameByUserId(String userId);
 }

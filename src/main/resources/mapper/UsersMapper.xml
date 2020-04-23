@@ -27,6 +27,12 @@
         from users
         where username = #{username,jdbcType=VARCHAR}
     </select>
+    <select id="selectByUserId" parameterType="java.lang.String" resultType="com.personal.pojo.Users">
+        select
+        <include refid="Base_Column_List"/>
+        from users
+        where user_id = #{userId,jdbcType=VARCHAR}
+    </select>
     <select id="selectByEmail" parameterType="java.lang.String" resultType="com.personal.pojo.Users">
         select
         <include refid="Base_Column_List"/>
@@ -36,6 +42,7 @@
     <select id="userCount" resultType="java.lang.Integer">
         select count(*) from users group by user_type;
     </select>
+
     <delete id="deleteByPrimaryKey" parameterType="Long">
     delete from users
     where id = #{id,jdbcType=BIGINT}

@@ -47,7 +47,7 @@
     <!--已发布职位卡片列表-->
     <sql id="Release_Position_List">
         select
-        position.id, position.name, position.company_id companyId, position.user_id userId,uu.username username,uu.auth auth, position.detail,position.city, position.need_num needNum, position.work_exp workExp, position.edu_bg eduBg, position.salary,
+        position.id, position.name, position.company_id companyId, position.user_id userId,uu.username username,uu.user_id userLid,uu.auth auth, position.detail,position.city, position.need_num needNum, position.work_exp workExp, position.edu_bg eduBg, position.salary,
             position.salary_float salaryFloat, position.workType worktype, position.faceTo faceto,position.status,position.releaseTime,trade.name trade
         from position,position_enum pe1,position_enum pe2,company,trade,users uu
         where position.status = 1
@@ -325,9 +325,15 @@
         where user_id = #{param1} and position_id in
         (select id from position where company_id = #{param2})
     </update>
+    <!--从投递箱移除职位 参数 userId 值 positionIds 职位id数组-->
     <update id="deletePost" parameterType="hashmap">
         update job_apply
         set status=-1
-        where user_id = #{userId} and position_id = #{positionId}
+        where user_id = #{userId}
+        and position_id in
+        <foreach collection="positionIds" item="onePositionId" separator=","
+                 open="(" close=")">
+            #{onePositionId}
+        </foreach>
     </update>
 </mapper>

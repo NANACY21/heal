@@ -16,7 +16,20 @@ public interface UsersMapper {
 
     Users selectByPrimaryKey(Long id);
 
+    /**
+     * 根据username查询
+     *
+     * @param username 用户名
+     * @return
+     */
     Users selectByUsername(String username);
+
+    /**
+     * 根据userId查询 19位随机数
+     * @param userId
+     * @return
+     */
+    Users selectByUserId(String userId);
     Users selectByEmail(String email);
 
     /**

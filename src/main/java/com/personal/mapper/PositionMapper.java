@@ -61,7 +61,7 @@ public interface PositionMapper {
 
     /**
      * 投递箱移除一个职位
-     * @param map
+     * @param map userId 值 positionIds 职位id数组
      * @return
      */
     int deletePost(Map<String, Object> map);

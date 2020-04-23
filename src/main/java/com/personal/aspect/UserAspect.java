@@ -60,8 +60,13 @@ public class UserAspect {
         String newPassword = users.getNewPassword();
         if (newPassword != null) {
             //更新Redis
+            //目标用户
+            Users users1 = mapper.selectByEmail(users.getEmail());
+            if (users1 == null) {
+                return;
+            }
             Jedis jedis = RedisConnection.getJedis();
-            jedis.set(users.getUsername(), newPassword);
+            jedis.set(users1.getUsername(), newPassword);
         }
     }
 }

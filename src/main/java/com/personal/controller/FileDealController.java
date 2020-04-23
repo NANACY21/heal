@@ -1,4 +1,5 @@
 package com.personal.controller;
+import com.personal.pojo.Users;
 import com.personal.service.UsersService;
 import com.personal.util.ConstPool;
 import com.personal.util.Util;
@@ -31,10 +32,11 @@ public class FileDealController {
     public static final String LOAD_PHOTO_FAIL = "加载照片失败";
 
     /**
-     * 头像上传 / 简历照片上传
-     *
+     * 头像上传 / 简历照片上传 / 广告图片上传
+     * 上传广告图片时 username：广告图片序号
      * 上传图片/文本使用的io流不同，难怪上传的图片打不开
      * 前端el-upload :data 传到这里不加@RequestBody，加了报415
+     *
      * @param map
      * @param file
      * @return
@@ -44,11 +46,16 @@ public class FileDealController {
     @RequestMapping("/uploadPhoto")
     @ResponseBody
     public String uploadPhoto(@RequestParam Map<String, Object> map, MultipartFile file) throws SocketException, IOException {
+        //上传到该目录
         String path;
         String username = map.get("username").toString();
         String reason = map.get("reason").toString();
-        //用户唯一id 19位随机数
-        String userId = service.getUserByUsername(username).getUserId();
+        //用户唯一id 19位随机数 作为上传的文件的新文件名
+        String userId = username;
+        Users user = service.getUserByUsername(username);
+        if (user != null) {
+            userId = user.getUserId();
+        }
         if (HEADPHOTO.equals(reason)) {
             path = ConstPool.HEAD_PHOTO_SAVE_PATH;
         } else if (RESUMEPHOTO.equals(reason)) {

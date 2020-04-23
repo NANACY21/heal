@@ -65,11 +65,12 @@ public class UsersServiceImpl implements UsersService {
         System.out.println(users1);
         //参数是引用传递
         users.setId(users1.getId());
+        users.setCompanyId(users1.getCompanyId());
         users.setUsername(users1.getUsername());
         users.setPassword(users1.getPassword());
-        users.setEmail(users1.getEmail());
-        users.setCompanyId(users1.getCompanyId());
         users.setUserType(users1.getUserType());
+        users.setUserId(users1.getUserId());
+        users.setEmail(users1.getEmail());
         users.setAuth(users1.getAuth());
         return ConstPool.LOGIN_SUCCESS;
     }
@@ -87,7 +88,7 @@ public class UsersServiceImpl implements UsersService {
     }
 
     /**
-     * 邮箱查询用户
+     * 通过邮箱查询用户
      *
      * @param email
      * @return
@@ -122,5 +123,27 @@ public class UsersServiceImpl implements UsersService {
     @Override
     public List<Integer> userCount() {
         return mapper.userCount();
+    }
+
+    /**
+     * 通过用户名得到userId
+     *
+     * @param username
+     * @return
+     */
+    @Override
+    public String getUserIdByUsername(String username) {
+        return mapper.selectByUsername(username).getUserId();
+    }
+
+    /**
+     * 通过userId得到用户名
+     *
+     * @param userId
+     * @return
+     */
+    @Override
+    public String getUsernameByUserId(String userId) {
+        return mapper.selectByUserId(userId).getUsername();
     }
 }

@@ -3,6 +3,7 @@ package com.personal.kafkaService.consumer;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.personal.pojo.msg.Message;
+import com.personal.service.UsersService;
 import com.personal.util.ConstPool;
 import com.personal.util.Util;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,7 @@ import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.Node;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.TopicPartitionInfo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,6 +54,10 @@ import java.util.logging.Logger;
 @Slf4j
 public class MessageConsumer {
 
+    @Autowired
+    private UsersService service;
+    @Autowired
+    private Util util;
     private static final Logger logger = Logger.getLogger(MessageConsumer.class.getName());
 
     /**
@@ -60,11 +66,13 @@ public class MessageConsumer {
      * @param kafkaParams Kafka消费者配置 properties或Map
      * @param topic       topic名称 查询的主题名称
      * @param count       partition中条数 前多少条
-     * @param username    该用户的消息
+     * @param username    用户名 该用户的消息
      */
     public Map<String, List<Message>> receiveLatestMessage(Properties kafkaParams, String topic, Integer count, String username) {
         //该用户的全部消息列表
         List<Message> messageList = new ArrayList<>();
+        //该用户的19位用户号
+        String userId19 = service.getUserIdByUsername(username);
         logger.info("create KafkaConsumer");
         //创建消费者
         final KafkaConsumer<String, String> consumer = new KafkaConsumer<>(kafkaParams);
@@ -96,7 +104,7 @@ public class MessageConsumer {
                     //System.out.printf("read offset =%d, key=%s , value= %s, partition=%s\n", record.offset(), record.key(), record.value(), record.partition());
                     Message message = (Message) Util.jsonToObject(new Message(), record.value().toString());
                     //关键！！！
-                    if (username.equals(message.getTo()) || username.equals(message.getFrom())) {
+                    if (userId19.equals(message.getToId()) || userId19.equals(message.getFromId())) {
                         //关键！！！
                         message.setTimestamp(record.timestamp());
                         messageList.add(message);
@@ -117,7 +125,7 @@ public class MessageConsumer {
             System.out.println(messageList.get(i).toString());
         }
         //关键！！！
-        return Util.msgSortOut(messageList, username);
+        return util.msgSortOut(messageList, userId19);
     }
 
     /**
