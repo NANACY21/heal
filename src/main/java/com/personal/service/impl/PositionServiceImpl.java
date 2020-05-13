@@ -39,7 +39,8 @@ public class PositionServiceImpl implements PositionService {
     private UsersMapper usersMapper;
     @Autowired
     private ElasticSearchUtil searchUtil;
-
+    @Autowired
+    private Util util;
     /**
      * 添加/编辑职位
      *
@@ -54,14 +55,16 @@ public class PositionServiceImpl implements PositionService {
         if (position.getId() == null) {
             if (mapper.getPositionByName(position.getName(), position.getCompanyId()).size() > 0) {
                 position.setName(null);
-                return "职位已存在，失败";
+                return "职位已存在，新增职位失败";
             }
-            //设置该职位发布时间
-            position.setReleaseTime(Util.getTime());
+            //设置该职位发布时间！！！
+            position.setReleaseTime(null);
+            //insert后自增的MySQL主键id 可以拿到，在该方法的参数里！！！
             int i = mapper.insertSelective(position);
             if (i > 0) {
                 return ConstPool.ADD_POSITION_SUCCESS;
             }
+            position.setName(null);
             return ConstPool.ADD_POSITION_FAIL;
         }
         //编辑职位并保存
@@ -70,6 +73,7 @@ public class PositionServiceImpl implements PositionService {
             if (i > 0) {
                 return "职位修改保存成功";
             }
+            position.setName(null);
             return "职位修改保存失败";
         }
         return "失败";
@@ -87,11 +91,13 @@ public class PositionServiceImpl implements PositionService {
     public String delPosition(long[] positionIds) {
         //存放要删除的职位的名称
         String[] positionName = new String[positionIds.length];
+        long[] positionId = new long[positionIds.length];
 
         for (int i = 0; i < positionIds.length; i++) {
             Position position = mapper.selectByPrimaryKey(positionIds[i]);
             //要删的职位名称
             positionName[i] = position.getName();
+            positionId[i] = position.getCompanyId();
             //职位不存在、已发布、等
             if (position == null || position.getStatus() == 1) {
                 return "选中职位全删除失败";
@@ -107,7 +113,7 @@ public class PositionServiceImpl implements PositionService {
         }
         //同步删除ES中的数据 没用动态代理
         for (int i = 0; i < positionName.length; i++) {
-            String ESid = searchUtil.getPositionByName(positionName[i]);
+            String ESid = searchUtil.getPositionByName(positionName[i], positionId[i]);
             searchUtil.delPosition(ESid, ConstPool.INDEX_NAME);
         }
         return "选中职位删除成功";
@@ -219,18 +225,7 @@ public class PositionServiceImpl implements PositionService {
             queryCondition.put("rowNum", pageSize);
         }
         List<ReleasePosition> list = mapper.selectByStatus(queryCondition);
-        //给公司名称、公司信息赋上值
-        for (ReleasePosition rp : list) {
-            String jsonStr = Util.readJsonFileTool(new File(ConstPool.JSON_PATH, rp.getCompanyId() + ".json"));
-            //json串->对象
-            JSONObject jsonObject = JSON.parseObject(jsonStr);
-            String companyName = jsonObject.get("name").toString();
-            rp.setCompanyName(companyName);
-            JSONObject introduction = jsonObject.getJSONObject("introduction");
-            String summary = introduction.get("summary").toString();
-            rp.setCompanyInfo(summary);
-        }
-        return list;
+        return util.getCompanyInfo(list);
     }
 
     /**
@@ -262,7 +257,7 @@ public class PositionServiceImpl implements PositionService {
             return "已取消收藏";
         }
         redisUtil.insert(username + ConstPool.COLLECT_POSITION, positionId);
-        return "已收藏"; 
+        return "已收藏";
     }
 
     /**
@@ -281,22 +276,8 @@ public class PositionServiceImpl implements PositionService {
         if (positionIdList == null || positionIdList.size() == 0) {
             return new ArrayList<>();
         }
-        List<ReleasePosition> collectPositionList = mapper.collectPositionList(positionIdList);
-        if (collectPositionList == null || collectPositionList.size() == 0) {
-            return new ArrayList<>();
-        }
-        //给公司名称、公司信息赋上值
-        for (ReleasePosition rp : collectPositionList) {
-            String jsonStr = Util.readJsonFileTool(new File(ConstPool.JSON_PATH, rp.getCompanyId() + ".json"));
-            //json串->对象
-            JSONObject jsonObject = JSON.parseObject(jsonStr);
-            String companyName = jsonObject.get("name").toString();
-            rp.setCompanyName(companyName);
-            JSONObject introduction = jsonObject.getJSONObject("introduction");
-            String summary = introduction.get("summary").toString();
-            rp.setCompanyInfo(summary);
-        }
-        return collectPositionList;
+        List<ReleasePosition> list = mapper.collectPositionList(positionIdList);
+        return util.getCompanyInfo(list);
     }
 
     /**

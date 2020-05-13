@@ -85,10 +85,18 @@ public class PositionAspect {
             //若投递失败 目标方法的参数会置空 不发消息
             return;
         }
+        //投简历的人
         Users user = usersService.getUserById(jobApply.getUserId());
+        //投递的职位
         Position position = positionService.getPositionById(jobApply.getPositionId());
         String topic = ConstPool.KAFKA_TOPIC1;
-        Message message = new Message(ConstPool.SYSTEM_USERNAME, user.getUsername(), "你投递了[" + position.getName() + "]职位");
+        //接收者用户名
+        String username = user.getUsername();
+        //消息内容
+        String content = Util.getTime() + "，你投递了 [" + position.getName() + "] 职位";
+        Message message = new Message(ConstPool.SYSTEM_USERNAME, username, content);
+        message.setFromId(usersService.getUserIdByUsername(ConstPool.SYSTEM_USERNAME));
+        message.setToId(usersService.getUserIdByUsername(username));
         producer.send(topic, com.personal.util.Util.objectToJson(message));
     }
 
@@ -104,9 +112,14 @@ public class PositionAspect {
         if (position.getName() == null) {
             return;
         }
-        String ESId = searchUtil.getPositionByName(position.getName());
+        String ESId = searchUtil.getPositionByName(position.getName(), position.getCompanyId());
         if (ESId == null || ESId.length() == 0) {
-            searchUtil.savePosition(position, ConstPool.INDEX_NAME);
+            String byId = searchUtil.getPositionById(position.getId());
+            if (byId == null || byId.length() == 0) {
+                searchUtil.savePosition(position, ConstPool.INDEX_NAME);
+            } else {
+                searchUtil.updatePosition(byId, Util.pojoToMap(position));
+            }
         } else {
             searchUtil.updatePosition(ESId, Util.pojoToMap(position));
         }
@@ -114,6 +127,7 @@ public class PositionAspect {
 
     /**
      * 职位状态 status 改变之后
+     * ES也同步更新
      * @param joinPoint
      */
     @After("execution(public * com.personal.service.impl.PositionServiceImpl.changePositionStatus(..))")
@@ -122,9 +136,25 @@ public class PositionAspect {
         if (position == null) {
             return;
         }
+        Object[] args = joinPoint.getArgs();
+        //目标方法的参数
+        Map<String, Object> argMap = (Map<String, Object>) args[0];
         Map<String, Object> map = new HashMap<>();
-        map.put("status", position.getStatus());
-        String ESId = searchUtil.getPositionByName(position.getName());
+        //要改成的职位状态
+        int status = Integer.parseInt(argMap.get("status").toString());
+        map.put("status", status);
+        //要更新的职位发布时间
+        String releaseTime = "";
+        //是要发布职位
+        if (status == 1) {
+            releaseTime = position.getReleaseTime();
+        }
+        //是要撤回职位
+        else if (status == 0) {
+
+        }
+        map.put("releaseTime", releaseTime);
+        String ESId = searchUtil.getPositionByName(position.getName(), position.getCompanyId());
         searchUtil.updatePosition(ESId, map);
     }
 

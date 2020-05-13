@@ -28,7 +28,8 @@ import java.time.Duration;
 import java.util.*;
 import java.util.logging.Logger;
 
-/**自动私聊、系统消息
+/**消息通知
+ * 自动私聊、系统消息
  * 消费者 读取用户消息
  * Kafka 消费 topic 最近 n 条消息
  * Kafka 获取 topic 最近 n 条消息

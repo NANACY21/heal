@@ -8,5 +8,9 @@ import java.util.List;
  */
 public interface CompanyMapper {
 
+    /**
+     * 获取公司卡片列表
+     * @return
+     */
     List<Company> companyList();
 }

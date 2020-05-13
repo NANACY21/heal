@@ -17,6 +17,7 @@
         <result column="faceTo" property="faceto" jdbcType="VARCHAR" />
         <result column="status" property="status" jdbcType="INTEGER" />
         <result column="releaseTime" property="releaseTime" jdbcType="TIMESTAMP" />
+        <result column="trade" property="trade" jdbcType="VARCHAR" />
     </resultMap>
 
     <resultMap id="ReleasePosition" type="com.personal.pojo.web.ReleasePosition" >
@@ -41,17 +42,16 @@
     </resultMap>
     <sql id="Base_Column_List" >
         id, name, company_id companyId, user_id userId, detail,city, need_num needNum, work_exp workExp, edu_bg eduBg, salary,
-    salary_float salaryFloat, workType worktype, faceTo faceto,status,releaseTime
+    salary_float salaryFloat, workType worktype, faceTo faceto,status,releaseTime,trade
     </sql>
 
     <!--已发布职位卡片列表-->
     <sql id="Release_Position_List">
         select
         position.id, position.name, position.company_id companyId, position.user_id userId,uu.username username,uu.user_id userLid,uu.auth auth, position.detail,position.city, position.need_num needNum, position.work_exp workExp, position.edu_bg eduBg, position.salary,
-            position.salary_float salaryFloat, position.workType worktype, position.faceTo faceto,position.status,position.releaseTime,trade.name trade
-        from position,position_enum pe1,position_enum pe2,company,trade,users uu
+            position.salary_float salaryFloat, position.workType worktype, position.faceTo faceto,position.status,position.releaseTime,position.trade trade
+        from position,company,users uu
         where position.status = 1
-        and position.name=pe1.name and pe1.parent_id=pe2.id and pe2.trade_id=trade.id
         and position.company_id=company.id and position.user_id=uu.id
     </sql>
     <sql id="limitVal">
@@ -140,13 +140,13 @@
                               user_id, detail, city, need_num,
                               work_exp, edu_bg,
                               salary, salary_float, workType,
-                              faceTo,status,releaseTime)
+                              faceTo,status,releaseTime,trade)
         values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{companyId,jdbcType=BIGINT},
                 #{userId,jdbcType=BIGINT}, #{detail,jdbcType=VARCHAR},
                 #{city,jdbcType=VARCHAR},#{needNum,jdbcType=VARCHAR}, #{workExp,jdbcType=VARCHAR}, #{eduBg,jdbcType=VARCHAR},
                 #{salary,jdbcType=INTEGER}, #{salaryFloat,jdbcType=INTEGER}, #{worktype,jdbcType=VARCHAR},
-                #{faceto,jdbcType=VARCHAR},#{status,jdbcType=INTEGER},#{releaseTime,jdbcType=TIMESTAMP});
-
+                #{faceto,jdbcType=VARCHAR},#{status,jdbcType=INTEGER},#{releaseTime,jdbcType=TIMESTAMP},
+                #{trade,jdbcType=VARCHAR});
     </insert>
     <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="com.personal.pojo.Position" >
         insert into position
@@ -196,6 +196,9 @@
             <if test="releaseTime != null" >
                 releaseTime,
             </if>
+            <if test="trade != null">
+                trade,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides="," >
             <if test="id != null" >
@@ -242,6 +245,9 @@
             </if>
             <if test="releaseTime != null" >
                 #{releaseTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="trade != null" >
+                #{trade,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -290,6 +296,9 @@
             <if test="releaseTime != null" >
                 releaseTime = #{releaseTime,jdbcType=TIMESTAMP},
             </if>
+            <if test="trade != null" >
+                trade = #{trade,jdbcType=VARCHAR},
+            </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
@@ -308,7 +317,8 @@
             workType = #{worktype,jdbcType=VARCHAR},
             faceTo = #{faceto,jdbcType=VARCHAR},
             status = #{status,jdbcType=INTEGER},
-            releaseTime = #{releaseTime,jdbcType=TIMESTAMP}
+            releaseTime = #{releaseTime,jdbcType=TIMESTAMP},
+            trade = #{trade,jdbcType=VARCHAR}
         where id = #{id,jdbcType=BIGINT}
     </update>
     <!--招聘者改变求职者职位的投递状态！！！ lt 小于-->

@@ -24,7 +24,7 @@ public class Job_applyController {
     private Job_applyService service;
 
     /**
-     * 申请职位，投递简历
+     * 求职者申请职位，投递简历
      * 投递职位：MySQL insert一条，后置通知：redis新增一条
      * @param job_apply
      * @return

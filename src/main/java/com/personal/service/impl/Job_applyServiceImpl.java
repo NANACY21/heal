@@ -24,7 +24,7 @@ public class Job_applyServiceImpl implements Job_applyService {
     private Job_applyMapper mapper;
 
     /**
-     * 申请职位，投递简历
+     * 求职者申请职位，投递简历
      *
      * @param job_apply
      * @return

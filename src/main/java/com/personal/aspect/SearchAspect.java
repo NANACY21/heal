@@ -20,6 +20,11 @@ import java.util.Map;
 public class SearchAspect {
     @Autowired
     RedisUtil redisUtil;
+
+    /**
+     * 全局站内搜索之前 保存搜索历史记录
+     * @param joinPoint
+     */
     @Before("execution(public * com.personal.ESService.SearchService.globalSearch(..))")
     public void beforeGlobalSearch(JoinPoint joinPoint) {
         Object[] args = joinPoint.getArgs();
@@ -28,9 +33,9 @@ public class SearchAspect {
             //未登录的用户不记载历史记录
             return;
         }
-        //用户
+        //用户名
         String username = map.get("username").toString();
-        //搜索的内容
+        //搜索内容
         String searchContent = map.get("searchContent").toString();
         redisUtil.insert(username + ConstPool.SEARCH_HISTORY, searchContent);
     }

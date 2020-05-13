@@ -11,7 +11,7 @@ import java.util.Map;
  */
 public interface Job_applyService {
     /**
-     * 申请职位，投递简历
+     * 求职者申请职位，投递简历
      * @param job_apply
      * @return
      */

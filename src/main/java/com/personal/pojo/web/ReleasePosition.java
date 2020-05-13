@@ -1,10 +1,10 @@
 package com.personal.pojo.web;
 
-/**前端json、MySQL查询结果集
+/**面向求职者的
+ * 前端json、MySQL查询结果集
  * @author 李箎
  */
 public class ReleasePosition {
-
     /**
      * 职位信息
      */
@@ -46,6 +46,10 @@ public class ReleasePosition {
 
     //职位所属行业
     private String trade;
+    /**
+     * 投递状态 对于求职者来说的
+     */
+    private int postStatus;
     //公司名称
     private String companyName;
     //公司信息
@@ -57,6 +61,14 @@ public class ReleasePosition {
 
     public void setTrade(String trade) {
         this.trade = trade;
+    }
+
+    public int getPostStatus() {
+        return postStatus;
+    }
+
+    public void setPostStatus(int postStatus) {
+        this.postStatus = postStatus;
     }
 
     public String getCompanyName() {
@@ -253,6 +265,7 @@ public class ReleasePosition {
                 ", releaseTime='" + releaseTime + '\'' +
                 ", del='" + del + '\'' +
                 ", trade='" + trade + '\'' +
+                ", postStatus=" + postStatus +
                 ", companyName='" + companyName + '\'' +
                 ", companyInfo='" + companyInfo + '\'' +
                 '}';

@@ -2,6 +2,7 @@ package com.personal.ESService;
 
 import com.alibaba.fastjson.JSONObject;
 import com.personal.pojo.Position;
+import com.personal.pojo.web.ReleasePosition;
 import com.personal.util.ConstPool;
 import com.personal.util.Util;
 import org.apache.http.HttpHost;
@@ -54,13 +55,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
+import static org.elasticsearch.index.query.QueryBuilders.*;
 
-/**https://www.cnblogs.com/java-spring/p/11721615.html
+/**https://blog.csdn.net/qq_32123821/article/details/97395023?depth_1-utm_source=distribute.pc_relevant.none-task&utm_source=distribute.pc_relevant.none-task
+ * https://www.cnblogs.com/java-spring/p/11721615.html
  * https://blog.csdn.net/Amor_Leo/article/details/101018008
  * https://www.cnblogs.com/betterwgo/p/11268869.html
  * https://blog.csdn.net/truong/article/details/62046063
- * https://blog.csdn.net/qq_32123821/article/details/97395023?depth_1-utm_source=distribute.pc_relevant.none-task&utm_source=distribute.pc_relevant.none-task
  * https://blog.csdn.net/paditang/article/details/78802799
  * [已过时]public interface PositionRepository extends ElasticsearchRepository<Position, Long>
  * ES工具类
@@ -110,15 +111,8 @@ public class ElasticSearchUtil {
         }
     }
 
-    /**
+    /**创建对象
      * 注入参数 参数设置之后 new一个高级别客户端实例
-     * @throws Exception 异常信息
-     */
-    public void newRestHighLevelClient() throws Exception {
-        client = buildClient();
-    }
-
-    /**
      * <li>Description: 自定义的构造方法 </li>
      *
      * @return RestHighLevelClient
@@ -143,7 +137,7 @@ public class ElasticSearchUtil {
      */
     public String createIndex(String indexName) {
         try {
-            this.newRestHighLevelClient();
+            this.buildClient();
             if (this.isIndexExists(indexName)) {
                 return "索引 " + indexName + " 已经存在";
             }
@@ -212,7 +206,7 @@ public class ElasticSearchUtil {
     public String delIndex(String indexName) {
         boolean acknowledged = false;
         try {
-            this.newRestHighLevelClient();
+            this.buildClient();
             if (!this.isIndexExists(indexName)) {
                 return "失败，索引 " + indexName + " 不存在";
             }
@@ -261,7 +255,7 @@ public class ElasticSearchUtil {
         String positionJson = JSONObject.toJSONString(position);
         indexRequest.source(positionJson, XContentType.JSON);
         try {
-            this.newRestHighLevelClient();
+            this.buildClient();
             if (!this.isIndexExists(indexName)) {
                 return "失败";
             }
@@ -316,7 +310,7 @@ public class ElasticSearchUtil {
         DeleteRequest deleteRequest = new DeleteRequest(indexName);
         deleteRequest.id(id);
         try {
-            this.newRestHighLevelClient();
+            this.buildClient();
             DeleteResponse deleteResponse = client.delete(deleteRequest, RequestOptions.DEFAULT);
             if (deleteResponse.getResult() == DocWriteResponse.Result.NOT_FOUND) {
                 return "ES删除职位失败";
@@ -348,7 +342,7 @@ public class ElasticSearchUtil {
         UpdateRequest updateRequest = new UpdateRequest(ConstPool.INDEX_NAME, id);
         updateRequest.doc(map);
         try {
-            this.newRestHighLevelClient();
+            this.buildClient();
             UpdateResponse updateResponse = client.update(updateRequest, RequestOptions.DEFAULT);
             if (updateResponse.getResult() == DocWriteResponse.Result.UPDATED) {
                 return "ES更新职位成功";
@@ -367,22 +361,29 @@ public class ElasticSearchUtil {
         }
     }
 
-    /**ok
+    /**想查有没有该职位名称并且该公司id的 应该是没有不能命中 但是仍然命中，这是因为分词查询的坑！！！
+     * 所以使用完全匹配
+     * 能不能命中的问题！！！
+     * 不该命中的命中了，该命中的没命中，命中有误！！！要注意这种命中不准确的问题
+     * https://blog.csdn.net/weixin_36666151/article/details/100536527
+     * ok
+     *
      * @param name 职位名称
      * @return ES 数据id
      */
-    public String getPositionByName(String name) {
+    public String getPositionByName(String name, long companyId) {
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-        sourceBuilder.fetchSource(new String[]{"name"}, new String[]{});
-        //单个匹配
-        MatchQueryBuilder matchQueryBuilder = matchQuery("name", name);
+        sourceBuilder.fetchSource(new String[]{"name", "companyId"}, new String[]{});
+        //单个匹配 完全匹配 精准查询 数据类型也精准区分！！！
+        MatchPhraseQueryBuilder name1 = matchPhraseQuery("name", name);
+        MatchPhraseQueryBuilder companyId1 = matchPhraseQuery("companyId", companyId);
         BoolQueryBuilder boolBuilder = QueryBuilders.boolQuery();
-        boolBuilder.must(matchQueryBuilder);
+        boolBuilder.must(companyId1).must(name1);
         sourceBuilder.query(boolBuilder);
         SearchRequest searchRequest = new SearchRequest(ConstPool.INDEX_NAME);
         searchRequest.source(sourceBuilder);
         try {
-            this.newRestHighLevelClient();
+            this.buildClient();
             if (!this.isIndexExists(ConstPool.INDEX_NAME)) {
                 return "";
             }
@@ -396,8 +397,47 @@ public class ElasticSearchUtil {
         } catch (Exception e) {
             e.printStackTrace();
             return "";
+        } finally {
+            try {
+                this.destroy();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
-        finally {
+        return "";
+    }
+
+    /**
+     * 通过id查找职位
+     * @param id 职位id MySQL主键 long类型
+     * @return ES中主键id String类型
+     */
+    public String getPositionById(long id) {
+        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+        sourceBuilder.fetchSource(new String[]{"id"}, new String[]{});
+        //单个匹配 完全匹配 精准查询 数据类型也精准区分！！！
+        MatchPhraseQueryBuilder positionId = matchPhraseQuery("id", id);
+        BoolQueryBuilder boolBuilder = QueryBuilders.boolQuery();
+        boolBuilder.must(positionId);
+        sourceBuilder.query(boolBuilder);
+        SearchRequest searchRequest = new SearchRequest(ConstPool.INDEX_NAME);
+        searchRequest.source(sourceBuilder);
+        try {
+            this.buildClient();
+            if (!this.isIndexExists(ConstPool.INDEX_NAME)) {
+                return "";
+            }
+            SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+            System.out.println(response);
+            SearchHits hits = response.getHits();
+            for (SearchHit hit : hits) {
+                String sourceAsString = hit.getSourceAsString();
+                return hit.getId();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        } finally {
             try {
                 this.destroy();
             } catch (Exception e) {
@@ -408,6 +448,7 @@ public class ElasticSearchUtil {
     }
 
     /**ok
+     * 招聘者的搜索
      * 按职位名称搜索职位
      * ES普通搜索示例
      *
@@ -439,6 +480,7 @@ public class ElasticSearchUtil {
         //WildcardQueryBuilder wildcardQueryBuilder = QueryBuilders.wildcardQuery("name.keyword", "*三");
         //模糊查询
         //FuzzyQueryBuilder fuzzyQueryBuilder = QueryBuilders.fuzzyQuery("name", "三");
+        //单个匹配 模糊匹配
         MatchQueryBuilder matchQueryBuilder = matchQuery("name", searchContent);
         MatchQueryBuilder matchQueryBuilder2 = matchQuery("companyId", companyId);
         //按照月薪排序
@@ -453,7 +495,7 @@ public class ElasticSearchUtil {
         //传入构建进行搜索
         searchRequest.source(sourceBuilder);
         try {
-            this.newRestHighLevelClient();
+            this.buildClient();
             SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
             //处理结果
             RestStatus restStatus = response.status();
@@ -465,6 +507,62 @@ public class ElasticSearchUtil {
             for (SearchHit hit : hits) {
                 String sourceAsString = hit.getSourceAsString();
                 Position position = (Position) Util.jsonToObject(new Position(), sourceAsString);
+                positionList.add(position);
+            }
+            return positionList;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+        finally {
+            try {
+                this.destroy();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 求职者的搜索
+     * @param searchContent 搜索内容
+     * @return
+     */
+    public List<ReleasePosition> getReleasePositionList(String searchContent) {
+        //返回的结果
+        ArrayList<ReleasePosition> positionList = new ArrayList<>();
+        //创建搜索请求 全量搜索
+        SearchRequest searchRequest = new SearchRequest(ConstPool.INDEX_NAME);
+        //创建搜索构建者
+        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+
+        //自定义组合查询
+        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+        MatchQueryBuilder matchQueryBuilder = matchQuery("name", searchContent);
+        //按照月薪排序
+        FieldSortBuilder fieldSortBuilder = SortBuilders.fieldSort("salary");
+        //从小到大排序
+        fieldSortBuilder.sortMode(SortMode.MIN);
+        //must 与and    must not 非    should 或or
+        boolQueryBuilder.must(matchQueryBuilder);
+        //设置构建搜索属性 多条件查询
+        sourceBuilder.query(boolQueryBuilder).sort(fieldSortBuilder);
+        sourceBuilder.timeout(new TimeValue(60, TimeUnit.SECONDS));
+        //传入构建进行搜索
+        searchRequest.source(sourceBuilder);
+        try {
+            this.buildClient();
+            SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+            //处理结果
+            RestStatus restStatus = response.status();
+            if (restStatus != RestStatus.OK) {
+                return new ArrayList<>();
+            }
+            //搜索命中
+            SearchHits hits = response.getHits();
+            for (SearchHit hit : hits) {
+                String sourceAsString = hit.getSourceAsString();
+                ReleasePosition position = (ReleasePosition) Util.jsonToObject(new ReleasePosition(), sourceAsString);
                 positionList.add(position);
             }
             return positionList;
@@ -532,7 +630,7 @@ public class ElasticSearchUtil {
         searchSourceBuilder.trackTotalHits(true);
         searchRequest.source(searchSourceBuilder);
         try {
-            this.newRestHighLevelClient();
+            this.buildClient();
             SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
             SearchHit[] searchHits = searchResponse.getHits().getHits();
             while (searchHits != null && searchHits.length > 0) {
@@ -559,7 +657,7 @@ public class ElasticSearchUtil {
      */
     public List<Position> pageSearch2(String searchContent) {
         try {
-            this.newRestHighLevelClient();
+            this.buildClient();
             BoolQueryBuilder boolQuery = new BoolQueryBuilder();
             //大于等于
             RangeQueryBuilder rangeQuery= QueryBuilders.rangeQuery("name").gte(8);

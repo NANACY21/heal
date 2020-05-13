@@ -7,7 +7,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-/**
+/**面向招聘者的
  * 职位
  * 使用ES
  * 在SpringDataElasticSearch中，只需要操作对象，
@@ -62,6 +62,10 @@ public class Position {
      */
     private int status;
     private String releaseTime;
+    /**
+     * 该职位所属行业
+     */
+    private String trade;
 
     //内存数据
     private String del;
@@ -202,6 +206,14 @@ public class Position {
         this.releaseTime = releaseTime;
     }
 
+    public String getTrade() {
+        return trade;
+    }
+
+    public void setTrade(String trade) {
+        this.trade = trade;
+    }
+
     public int getPostStatus() {
         return postStatus;
     }
@@ -228,6 +240,7 @@ public class Position {
                 ", faceto='" + faceto + '\'' +
                 ", status=" + status +
                 ", releaseTime='" + releaseTime + '\'' +
+                ", trade='" + trade + '\'' +
                 ", del='" + del + '\'' +
                 ", postStatus=" + postStatus +
                 '}';

@@ -1,6 +1,7 @@
 package com.personal.controller.search;
 
 import com.personal.ESService.SearchService;
+import com.personal.pojo.web.ReleasePosition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,14 +20,14 @@ public class SearchController {
     private SearchService service;
 
     /**
-     * 全局搜索 站内搜索
+     * 全局站内搜索
      *
-     * @param temp 搜索内容
+     * @param temp 用户名 搜索内容
      * @return
      */
     @RequestMapping("/globalSearch")
     @ResponseBody
-    public String globalSearch(@RequestBody Map<String, Object> temp) {
+    public List<ReleasePosition> globalSearch(@RequestBody Map<String, Object> temp) {
         return service.globalSearch(temp);
     }
 
