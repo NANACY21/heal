@@ -30,13 +30,18 @@ public class TradeServiceImpl implements TradeService {
     @Autowired
     private Position_enumMapper position_enumMapper;
 
+    /**
+     * 获得所有行业名称
+     * @return
+     */
     @Override
     public List<Trade> getAllTrade() {
         return tradeMapper.getAllTrade();
     }
 
     /**！！！
-     * 所有行业，每个行业有行业的划分、职位
+     * 获得所有行业树
+     * 每个行业有行业的划分、职位
      *
      * @return
      */

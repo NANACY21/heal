@@ -9,11 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
- * 拦截器是针对所有请求的
- * 过滤器是针对所有url的
- * <p>
- * 登录拦截器
- * 所有请求的方法执行前要执行
+ * 这是 用户登录拦截器
  *
  * @author 李箎
  */
@@ -21,6 +17,8 @@ import javax.servlet.http.HttpSession;
 public class LoginInterceptor implements HandlerInterceptor {
 
     /**
+     * 所有请求所执行的方法执行前要执行
+     *
      * @param request
      * @param response
      * @param handler
@@ -30,14 +28,14 @@ public class LoginInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         HttpSession session = request.getSession(false);
+        //session已存在
         if (session != null) {
-            //session已存在
             //放行
             return true;
         } else {
             request.getSession();
             return true;
-//            return false;
+            //return false;
         }
     }
 

@@ -1,26 +1,27 @@
 package com.personal.config;
 
 import com.personal.config.interceptors.LoginInterceptor;
-import com.personal.util.ConstPool;
-import com.personal.util.HttpSessionListenerImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.*;
 
 /**
+ * web配置
+ *
  * @author 李箎
  */
 @Configuration
 //@EnableWebMvc
 public class WebMvcConfigurerImpl implements WebMvcConfigurer {
+
     @Autowired
     private LoginInterceptor loginInterceptor;
+
     /**
      * 解决跨域问题
      * 随意加配置类可能导致跨域无效，数据加载不出来
      * .allowedOrigins(ConstPool.WEB_IP)
+     *
      * @param registry
      */
     @Override
@@ -44,7 +45,8 @@ public class WebMvcConfigurerImpl implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
     }
 
-    /**拦截器配置
+    /**
+     * 拦截器配置
      * 注册添加拦截器
      * 该方法用来注册拦截器，我们自己写好的拦截器需要通过这里添加注册才能生效
      *

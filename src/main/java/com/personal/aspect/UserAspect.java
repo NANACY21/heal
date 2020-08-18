@@ -3,6 +3,7 @@ package com.personal.aspect;
 import com.personal.mapper.UsersMapper;
 import com.personal.pojo.Users;
 import com.personal.redisService.RedisConnection;
+import com.personal.redisService.tool.RedisUtil;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
@@ -25,6 +26,9 @@ public class UserAspect {
 
     @Autowired
     UsersMapper mapper;
+    @Autowired
+    RedisUtil redisUtil;
+
     /**
      * 控制器 修改用户名之前
      *
@@ -34,18 +38,17 @@ public class UserAspect {
     public void beforeUpdateUsername(JoinPoint joinPoint) {
         Object[] args = joinPoint.getArgs();
         //用户新的信息
-        Users users = (Users) args[0];
+        Users newUser = (Users) args[0];
         //该用户原来的信息
-        Users users1 = mapper.selectByPrimaryKey(users.getId());
+        Users oldUser = mapper.selectByPrimaryKey(newUser.getId());
         //更新Redis
-        Jedis jedis = RedisConnection.getJedis();
-        jedis.del(users1.getUsername());
-        jedis.set(users.getUsername(), users1.getPassword());
-        users.setCompanyId(null);
-        users.setPassword(null);
-        users.setUserType(null);
-        users.setUserId(null);
-        users.setEmail(null);
+        redisUtil.delKey(oldUser.getUsername());
+        redisUtil.set(newUser.getUsername(), oldUser.getPassword());
+        newUser.setCompanyId(null);
+        newUser.setPassword(null);
+        newUser.setUserType(null);
+        newUser.setUserId(null);
+        newUser.setEmail(null);
     }
 
     /**
@@ -56,17 +59,17 @@ public class UserAspect {
     public void afterUpdatePassword(JoinPoint joinPoint) {
         Object[] args = joinPoint.getArgs();
         //用户新的信息
-        Users users = (Users) args[0];
-        String newPassword = users.getNewPassword();
+        Users newUser = (Users) args[0];
+        //用户新的密码
+        String newPassword = newUser.getNewPassword();
         if (newPassword != null) {
             //更新Redis
             //目标用户
-            Users users1 = mapper.selectByEmail(users.getEmail());
-            if (users1 == null) {
+            Users targetUser = mapper.selectByEmail(newUser.getEmail());
+            if (targetUser == null) {
                 return;
             }
-            Jedis jedis = RedisConnection.getJedis();
-            jedis.set(users1.getUsername(), newPassword);
+            redisUtil.set(targetUser.getUsername(), newPassword);
         }
     }
 }

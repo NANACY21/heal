@@ -20,9 +20,9 @@ public class Edu_expServiceImpl implements Edu_expService {
     private Edu_expMapper mapper;
 
     /**
-     * 添加/修改教育经历
+     * 添加/编辑一个教育经历
      *
-     * @param edu_exp
+     * @param edu_exp 一个教育经历
      * @return
      */
     @Override
@@ -57,9 +57,9 @@ public class Edu_expServiceImpl implements Edu_expService {
     }
 
     /**
-     * 某个简历的教育经历列表
+     * 获得教育经历列表通过简历id
      *
-     * @param resumeId
+     * @param resumeId 简历id
      * @return
      */
     @Override

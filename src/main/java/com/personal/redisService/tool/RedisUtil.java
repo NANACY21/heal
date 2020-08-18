@@ -10,14 +10,18 @@ import redis.clients.jedis.Jedis;
 import java.util.List;
 import java.util.Set;
 
-/**https://blog.csdn.net/qq_38567039/article/details/89488380
+/**
+ * https://blog.csdn.net/qq_38567039/article/details/89488380
  * Java对象存进Redis https://blog.csdn.net/kunchengyue/article/details/83246902
+ *
  * @author 李箎
  */
 @Component
 public class RedisUtil {
+
     /**
      * 获取所有key
+     *
      * @return
      */
     public Set<String> getKeyList() {
@@ -26,23 +30,37 @@ public class RedisUtil {
 
     /**
      * 获取指定key
+     *
      * @param key
      * @return
      */
     public Set<String> getKeyList(String key) {
+
         return RedisConnection.getJedis().keys(key);
     }
 
     /**
-     * 移除指定的一个或多个key key不存在则忽略
+     * 设置key 的 value
      * @param key
+     * @param value
      */
-    public void delKey(String... key) {
-        Long del = RedisConnection.getJedis().del(key);
+    public void set(String key, String value) {
+        RedisConnection.getJedis().set(key, value);
+    }
+
+    /**
+     * 移除指定的一个或多个key key不存在则忽略
+     *
+     * @param key
+     * @return 被删除的key的数量
+     */
+    public Long delKey(String... key) {
+        return RedisConnection.getJedis().del(key);
     }
 
     /**
      * 获取指定key的值
+     *
      * @param key
      * @return
      */
@@ -52,6 +70,7 @@ public class RedisUtil {
 
     /**
      * 获取指定列表中的值 前20条
+     *
      * @param key
      * @return
      */
@@ -62,17 +81,19 @@ public class RedisUtil {
 
     /**
      * 向列表添加数据
+     *
      * @param listName 列表名 键
-     * @param value 值
+     * @param newValue 值
      */
-    public void insert(String listName, String value) {
-        RedisConnection.getJedis().lpush(listName, value);
+    public void insert(String listName, String newValue) {
+        RedisConnection.getJedis().lpush(listName, newValue);
     }
 
     /**
      * 移除某列表中某个元素
+     *
      * @param listName 列表名 键
-     * @param value 值
+     * @param value    值
      */
     public void delete(String listName, String value) {
         RedisConnection.getJedis().lrem(listName, 1, value);

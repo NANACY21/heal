@@ -8,25 +8,29 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
-/**ES config
+/**
+ * ES配置
+ *
  * @author 李箎
  */
 @Component
 @ConfigurationProperties(prefix = "elasticsearch")
 @Configuration
 public class EsConfig {
+
+    public static final String SCHEME = "http";
     private String host = "127.0.0.1";
     private Integer port = 9300;
 
     @Bean(destroyMethod = "close")
     public RestHighLevelClient client() {
         return new RestHighLevelClient(RestClient.builder(
-                new HttpHost(host, port, "http")
+                new HttpHost(host, port, SCHEME)
         ));
     }
 
     public String getHost() {
-        return host;
+        return this.host;
     }
 
     public void setHost(String host) {
@@ -34,7 +38,7 @@ public class EsConfig {
     }
 
     public Integer getPort() {
-        return port;
+        return this.port;
     }
 
     public void setPort(Integer port) {

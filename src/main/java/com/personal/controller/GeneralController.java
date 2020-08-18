@@ -6,10 +6,8 @@ import com.personal.util.ConstPool;
 import com.personal.util.CookieTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -22,11 +20,14 @@ import java.util.Map;
  */
 @Controller
 public class GeneralController {
+
     @Autowired
     private UsersService service;
+
     /**
-     * 验证是否已登录，如果已登录，返回用户名
+     * 验证用户是否已登录，如果已登录，返回用户对象
      * 查询 读cookie
+     *
      * @param request
      * @return
      * @throws Exception
@@ -56,9 +57,11 @@ public class GeneralController {
         return null;
     }
 
-    /**用这个有问题
+    /**
+     * 用该方法有问题而且没优化！！！可能是不同请求session id都不一样
      * 查询 读session
-     * 获取用户
+     * 获取当前用户
+     *
      * @return
      */
     @RequestMapping("/getCurrentUser")

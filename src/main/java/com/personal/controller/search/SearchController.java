@@ -12,17 +12,20 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 搜索
+ *
  * @author 李箎
  */
 @Controller
 public class SearchController {
+
     @Autowired
     private SearchService service;
 
     /**
      * 全局站内搜索
      *
-     * @param temp 用户名 搜索内容
+     * @param temp 用户名，搜索内容
      * @return
      */
     @RequestMapping("/globalSearch")
@@ -33,6 +36,7 @@ public class SearchController {
 
     /**
      * 获取全局站内搜索历史记录
+     *
      * @param username 用户名
      * @return
      */
@@ -43,8 +47,9 @@ public class SearchController {
     }
 
     /**
-     * 清空全局搜索历史记录
-     * @param username
+     * 清空全局站内搜索历史记录
+     *
+     * @param username 用户名
      * @return
      */
     @RequestMapping("/delSearchHistory")

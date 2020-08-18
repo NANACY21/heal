@@ -6,12 +6,16 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
-/**通用cookie操作
+/**
+ * 通用cookie操作
+ *
  * @author 李箎
  */
 public class CookieTool {
+
     /**
      * 批量添加cookie
+     *
      * @param response
      * @param keyValue key1 value1 key2 value2...
      */
@@ -31,7 +35,7 @@ public class CookieTool {
      *
      * @param request
      * @param response
-     * @param keys 要删除的cookie的key
+     * @param keys     要删除的cookie的key
      */
     public static void batchDeleteCookie(HttpServletRequest request, HttpServletResponse response, String... keys) {
         //遍历要删除的cookie的key
@@ -73,7 +77,7 @@ public class CookieTool {
      * 通过Key获取Value
      *
      * @param request
-     * @param name Key
+     * @param name    Key
      * @return Value
      */
     public static String getCookieValueByName(HttpServletRequest request, String name) {

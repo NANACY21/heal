@@ -20,9 +20,9 @@ public class Project_expServiceImpl implements Project_expService {
     private Project_expMapper mapper;
 
     /**
-     * 添加/修改项目经历
+     * 新增/编辑一个项目经历
      *
-     * @param project_exp
+     * @param project_exp 一个项目经历
      * @return
      */
     @Override
@@ -60,9 +60,9 @@ public class Project_expServiceImpl implements Project_expService {
     }
 
     /**
-     * 某个简历的项目经历列表
+     * 获得项目经历列表通过简历id
      *
-     * @param resumeId
+     * @param resumeId 简历id
      * @return
      */
     @Override

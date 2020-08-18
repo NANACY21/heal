@@ -5,9 +5,9 @@ import java.util.List;
 
 public interface Work_expService {
     /**
-     * 添加/修改工作经历
+     * 新增/编辑一个工作经历
      *
-     * @param work_exp
+     * @param work_exp 一个工作经历
      * @return
      */
     String saveWork_exp(Work_exp work_exp);
@@ -20,8 +20,8 @@ public interface Work_expService {
     String delWork_exp(long workExpId);
 
     /**
-     * 某个简历的工作经历列表
-     * @param resumeId
+     * 获得简历的工作经历列表通过简历id
+     * @param resumeId 简历id
      * @return
      */
     List<Work_exp> getWork_expListByResumeId(long resumeId);

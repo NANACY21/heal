@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface Project_expService {
     /**
-     * 添加/修改项目经历
+     * 新增/编辑一个项目经历
      *
-     * @param project_exp
+     * @param project_exp 一个项目经历
      * @return
      */
     String saveProject_exp(Project_exp project_exp);
@@ -21,8 +21,8 @@ public interface Project_expService {
     String delProject_exp(long projectExpId);
 
     /**
-     * 某个简历的项目经历列表
-     * @param resumeId
+     * 获得项目经历列表通过简历id
+     * @param resumeId 简历id
      * @return
      */
     List<Project_exp> getProject_expListByResumeId(long resumeId);

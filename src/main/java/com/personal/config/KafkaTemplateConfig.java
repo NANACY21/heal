@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Kafka配置
+ *
  * @author 李箎
  */
 @Configuration
@@ -60,6 +62,7 @@ public class KafkaTemplateConfig {
 
     /**
      * 当传输的是个实体类时，进行消息格式转换
+     *
      * @return
      */
     @Bean
@@ -77,6 +80,7 @@ public class KafkaTemplateConfig {
 
     /**
      * 新话题得加这个，若已有话题则无需了！！！
+     *
      * @return
      */
     @Bean

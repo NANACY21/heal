@@ -9,6 +9,8 @@ import org.omg.CORBA.OBJ_ADAPTER;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -23,9 +25,9 @@ public class ResumeServiceImpl implements ResumeService {
     private ResumeMapper mapper;
 
     /**
-     * 添加/编辑简历
+     * 新增/编辑 简历基本信息
      *
-     * @param resume
+     * @param resume 简历基本信息
      * @return
      */
     @Override
@@ -40,9 +42,9 @@ public class ResumeServiceImpl implements ResumeService {
         return "失败";
     }
 
-    /**
+    /**获得简历基本信息通过用户id
      * @param userId 用户id
-     * @return 该用户的简历基本信息
+     * @return
      */
     @Override
     public Resume getResumeByUserId(long userId) {
@@ -52,11 +54,14 @@ public class ResumeServiceImpl implements ResumeService {
     /**
      * 所有投递到本公司的简历概要列表
      *
-     * @param map 公司id 当前页 每页条数
+     * @param map 公司id，当前页，每页条数
      * @return
      */
     @Override
     public List<ResumeOutline> resumeList(Map<String, Object> map) {
+        if (map == null) {
+            return new ArrayList<>();
+        }
         //！！！
         if (map.get("currentPage") != null && map.get("pageSize") != null) {
             int currentPage = Integer.parseInt(map.get("currentPage").toString());
@@ -79,7 +84,7 @@ public class ResumeServiceImpl implements ResumeService {
     /**
      * 某职位的所有投递的简历
      *
-     * @param positionId
+     * @param positionId 职位id
      * @return
      */
     @Override
@@ -88,7 +93,7 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     /**
-     * 简历数
+     * 管理员 - 系统中简历总数
      *
      * @return
      */

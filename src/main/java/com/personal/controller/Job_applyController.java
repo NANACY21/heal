@@ -16,16 +16,19 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 职位申请
+ *
  * @author 李箎
  */
 @Controller
 public class Job_applyController {
+
     @Autowired
     private Job_applyService service;
 
     /**
      * 求职者申请职位，投递简历
-     * 投递职位：MySQL insert一条，后置通知：redis新增一条
+     *
      * @param job_apply
      * @return
      */
@@ -37,10 +40,9 @@ public class Job_applyController {
     }
 
     /**
-     * 某求职者的投递箱 申请的职位列表
-     * 读redis里的职位列表
+     * 某求职者的投递箱（申请的职位列表）
      *
-     * @param map userId，当前页，页大小
+     * @param map userId，当前页，页大小，投递状态
      * @return
      */
     @RequestMapping("/postList")
@@ -50,10 +52,9 @@ public class Job_applyController {
     }
 
     /**
-     * 某求职者的投递箱 申请的职位列表长度
-     * 读redis里的职位列表
+     * 某求职者的投递箱（申请的职位列表）长度
      *
-     * @param map userId，当前页，页大小
+     * @param map userId，当前页，页大小，投递状态
      * @return
      */
     @RequestMapping("/postListLength")
@@ -63,9 +64,9 @@ public class Job_applyController {
     }
 
     /**
-     * 某公司所有有投递的职位的列表
+     * 某公司所有有投递的职位列表
      *
-     * @param map companyId 当前页 页大小
+     * @param map companyId，当前页，页大小
      * @return
      */
     @RequestMapping("/hasPostList")
@@ -75,8 +76,9 @@ public class Job_applyController {
     }
 
     /**
-     * 某公司所有有投递的职位的列表长度
-     * @param map
+     * 某公司所有有投递的职位列表长度
+     *
+     * @param map companyId，当前页，页大小
      * @return
      */
     @RequestMapping("/hasPostListLength")
@@ -85,8 +87,9 @@ public class Job_applyController {
         return service.hasPostList(map).size();
     }
 
-    /**移除投递记录
-     * 移除投递箱中的一条或多条 移除redis里的那条
+    /**
+     * 移除投递箱中的一条或多条记录
+     *
      * @param id 投递箱列表项id
      * @return
      */

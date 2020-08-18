@@ -13,11 +13,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Date;
 import java.util.Random;
-import java.util.Vector;
-import java.util.concurrent.TimeUnit;
 
 /**
- * 邮件服务
+ * 发送邮件服务
  *
  * @author 李箎
  */
@@ -31,17 +29,21 @@ public class MailController {
     /**
      * 验证码5分钟失效
      */
-    public static final int INT = 5;
+    public static final int INVALID_TIME = 5;
     @Autowired
     private MailService mailService;
 
-    /**请求url：http://localhost:8088/mail/getCheckCode?users={...}
-     * @param users
+    /**
+     * 发邮件 邮件内容 验证码
+     * 请求url：http://localhost:8088/mail/getCheckCode?users={...}
+     *
+     * @param users 用户 邮件接收者
      * @return 原来返回值为RestResponse<String>
      */
     @RequestMapping(value = "/getCheckCode", method = RequestMethod.POST)
     @ResponseBody
     public String getCheckCode(@RequestBody Users users, HttpServletRequest request) {
+
         RestResponse<String> restResponse = new RestResponse<>();
         //生成6位的验证码
         String checkCode = String.valueOf(new Random().nextInt(899999) + 100000);
@@ -52,11 +54,11 @@ public class MailController {
         session.setAttribute(users.getEmail(), checkCode);
 
         //设置验证码失效时间
-        session.setMaxInactiveInterval(60 * INT);
+        session.setMaxInactiveInterval(60 * INVALID_TIME);
         //发邮件以告诉用户验证码
         String message = "你的注册验证码：" + checkCode + "，该验证码在：" + Util.getDate(new Date(), 5) + "前失效。";
         try {
-            mailService.sendSimpleMail(users.getEmail(), "exodus - 用户注册验证码", message);
+            mailService.sendSimpleMail(users.getEmail(), "【exodus】用户注册验证码", message);
         } catch (Exception e) {
             restResponse.setData(e.toString());
             //生成的验证码销毁

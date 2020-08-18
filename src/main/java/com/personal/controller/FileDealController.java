@@ -16,10 +16,13 @@ import java.net.SocketException;
 import java.util.Map;
 
 /**
+ * 上传文件
+ *
  * @author 李箎
  */
 @Controller
 public class FileDealController {
+
     @Autowired
     UsersService service;
     //请求的原因
@@ -32,13 +35,13 @@ public class FileDealController {
     public static final String LOAD_PHOTO_FAIL = "加载照片失败";
 
     /**
-     * 头像上传 / 简历照片上传 / 广告图片上传
+     * 上传头像 / 简历照片 / 广告图片
      * 上传广告图片时 username：广告图片序号
      * 上传图片/文本使用的io流不同，难怪上传的图片打不开
      * 前端el-upload :data 传到这里不加@RequestBody，加了报415
      *
-     * @param map
-     * @param file
+     * @param map 用户名，请求的原因
+     * @param file 文件
      * @return
      * @throws SocketException
      * @throws IOException
@@ -56,6 +59,7 @@ public class FileDealController {
         if (user != null) {
             userId = user.getUserId();
         }
+        //确定上传到哪个目录
         if (HEADPHOTO.equals(reason)) {
             path = ConstPool.HEAD_PHOTO_SAVE_PATH;
         } else if (RESUMEPHOTO.equals(reason)) {
@@ -65,6 +69,7 @@ public class FileDealController {
         } else {
             return UPLOAD_FAIL;
         }
+        //源文件丢失或错误
         if (file == null || file.getOriginalFilename() == null || file.getOriginalFilename().length() == 0) {
             return UPLOAD_FAIL;
         }
@@ -104,19 +109,21 @@ public class FileDealController {
     }
 
     /**
-     * 有头像则加载头像 / 简历有照片则加载简历照片
+     * 有头像 / 简历照片->加载头像 / 简历照片
      *
-     * @param map 用户名
-     * @return
+     * @param map 用户名，请求的原因
+     * @return 文件名（没有扩展名）
      */
     @RequestMapping("/loadPhoto")
     @ResponseBody
     public String loadPhoto(@RequestBody Map<String, Object> map) throws IOException {
+        //访问的目录
         String path;
         String username = map.get("username").toString();
         String reason = map.get("reason").toString();
         //用户唯一id 19位随机数
         String userId = service.getUserByUsername(username).getUserId();
+        //确定访问哪个目录
         if (HEADPHOTO.equals(reason)) {
             path = ConstPool.HEAD_PHOTO_SAVE_PATH;
         } else if (RESUMEPHOTO.equals(reason)) {
@@ -143,7 +150,7 @@ public class FileDealController {
     /**
      * 创建空JSON文件
      *
-     * @param companyId
+     * @param companyId 公司id
      * @return
      */
     @RequestMapping("/createJSONFile")
@@ -155,17 +162,17 @@ public class FileDealController {
                 return "文件已存在，无需再新建";
             }
             file.createNewFile();
-            return "成功";
+            return "创建空JSON文件成功";
         } catch (IOException e) {
             e.printStackTrace();
-            return "失败";
+            return "创建空JSON文件失败";
         }
     }
 
     /**
      * 读取json文件内容，返回json串
      *
-     * @param companyId
+     * @param companyId 公司id
      * @return
      */
     @RequestMapping("/readJSONFile")

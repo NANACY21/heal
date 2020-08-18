@@ -185,19 +185,20 @@ public class PositionServiceImpl implements PositionService {
     }
 
     /**
-     * 查询某个人在某公司投递的职位
+     * 查询某个人投递到某公司的职位
      *
-     * @param userId
-     * @param companyId
+     * @param map userId，companyId
      * @return
      */
     @Override
-    public List<Position> getPositionNameList(Long userId, Long companyId) {
+    public List<Position> getPositionNameList(Map<String, Object> map) {
+        long userId = Long.parseLong(map.get("userId").toString());
+        long companyId = Long.parseLong(map.get("companyId").toString());
         return mapper.getPositionNameList(userId, companyId);
     }
 
     /**
-     * 已发布职位列表
+     * 获得已发布的职位列表（首页推荐的职位）
      *
      * @param queryCondition 查询条件
      * @return
@@ -242,9 +243,9 @@ public class PositionServiceImpl implements PositionService {
     }
 
     /**
-     * 收藏该职位/取消收藏该职位
+     * 收藏/取消收藏该职位
      *
-     * @param map
+     * @param map 用户名，职位id
      * @return
      */
     @Override
@@ -261,7 +262,7 @@ public class PositionServiceImpl implements PositionService {
     }
 
     /**
-     * 收藏的职位列表
+     * 用户收藏的职位列表
      *
      * @param username
      * @return
@@ -283,13 +284,14 @@ public class PositionServiceImpl implements PositionService {
     /**
      * 通过我的用户id和公司id 我投递到该公司的所有职位均 标记：被查看
      *
-     * @param userId
-     * @param companyId
-     * @param postStatus 要改成的状态
+     * @param map userId companyId 要改成的状态
      * @return
      */
     @Override
-    public int changePostStatus(Long userId, Long companyId, int postStatus) {
+    public int changePostStatus(Map<String, Object> map) {
+        Long userId = Long.valueOf(map.get("userId").toString());
+        Long companyId = Long.valueOf(map.get("companyId").toString());
+        int postStatus = Integer.parseInt(map.get("postStatus").toString());
         if (postStatus == -2) {
             return mapper.changePostStatus2(userId, companyId, postStatus);
         } else if (postStatus > 0) {

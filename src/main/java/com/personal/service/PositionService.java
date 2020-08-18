@@ -13,7 +13,7 @@ import java.util.Map;
 public interface PositionService {
 
     /**
-     * 添加/编辑职位
+     * 企业版 - 添加/编辑职位
      *
      * @param position
      * @return
@@ -21,7 +21,8 @@ public interface PositionService {
     String savePosition(Position position);
 
     /**
-     * 删除职位 已发布的职位、有申请的职位不能删除（需要先撤回）
+     * 企业版 - 删除职位
+     * 已发布的职位、有申请的职位不能删除（需要先撤回）
      *
      * @param positionIds 一些职位id
      * @return
@@ -29,7 +30,7 @@ public interface PositionService {
     String delPosition(long[] positionIds);
 
     /**
-     * 发布/撤回职位
+     * 企业版 - 发布/撤回职位
      *
      * @param map 职位id 要改成的职位状态
      * @return
@@ -37,7 +38,8 @@ public interface PositionService {
     String changePositionStatus(Map<String, Object> map);
 
     /**
-     * 某公司的招聘职位列表 包括已/未发布的
+     * 企业版 - 某公司的招聘职位列表
+     * 包括已/未发布的
      *
      * @param map companyId，当前页，页大小
      * @return
@@ -45,15 +47,14 @@ public interface PositionService {
     List<Position> getPositionList(Map<String, Object> map);
 
     /**
-     * 查询某个人在某公司投递的职位
-     * @param userId
-     * @param companyId
+     * 查询某个人投递到某公司的职位
+     * @param map userId，companyId
      * @return
      */
-    List<Position> getPositionNameList(Long userId, Long companyId);
+    List<Position> getPositionNameList(Map<String, Object> map);
 
     /**
-     * 已发布职位列表
+     * 获得已发布的职位列表（首页推荐的职位）
      * @param queryCondition 查询条件
      * @return
      */
@@ -67,15 +68,15 @@ public interface PositionService {
     Position getPositionById(long id);
 
     /**
-     * 收藏该职位/取消收藏该职位
+     * 收藏/取消收藏该职位
      *
-     * @param map
+     * @param map 用户名，职位id
      * @return
      */
     String collectPosition(Map<String, Object> map);
 
     /**
-     * 收藏的职位列表
+     * 用户收藏的职位列表
      * @param username
      * @return
      */
@@ -84,12 +85,10 @@ public interface PositionService {
     /**
      * 通过我的用户id和公司id 我投递到该公司的所有职位均 标记：被查看
      *
-     * @param userId
-     * @param companyId
-     * @param postStatus 要改成的状态
+     * @param map userId companyId 要改成的状态
      * @return
      */
-    int changePostStatus(Long userId, Long companyId, int postStatus);
+    int changePostStatus(Map<String, Object> map);
 
     /**
      * 从投递箱移除一个职位

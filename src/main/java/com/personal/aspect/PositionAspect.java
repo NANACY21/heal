@@ -12,21 +12,17 @@ import com.personal.service.UsersService;
 import com.personal.util.ConstPool;
 import com.personal.util.ObjectPool;
 import com.personal.util.Util;
-import org.apache.kafka.common.protocol.types.Field;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Vector;
 
 /**
  * @author 李箎
@@ -49,69 +45,79 @@ public class PositionAspect {
     private ElasticSearchUtil searchUtil;
 
     /**
-     * 前置通知 查询职位
+     * 查询职位
+     * 前置通知
      * 切点、通知在一起定义
      */
     @Before("execution(public * com.personal.service.impl.PositionServiceImpl.changePositionStatus(..))")
     public void beforePositionService(JoinPoint joinPoint) {
+
         //获取目标类的参数
         Object[] args = joinPoint.getArgs();
+        //目标类目标方法名
         String name = joinPoint.getSignature().getName();
         System.out.println("######这是前置通知，目标类目标方法名" + name);
-        //以下方法不加这个前通知
+        //以下这些方法不加这个前通知
         String[] methodNameList = {"savePosition", "delPosition", "collectPosition"};
         if (Arrays.asList(methodNameList).contains(name)) {
             return;
         }
         //目标类的参数
         System.out.println(Arrays.toString(args));
+        //目标方法第一个参数
         Map<String, Object> map = (Map<String, Object>) args[0];
+        //职位id
         long positionId = Long.parseLong(map.get("positionId").toString());
-        //得到的职位对象
+        //根据职位id得到的职位对象
         Position position = mapper.selectByPrimaryKey(positionId);
         //生产者
         ObjectPool.setPosition(position);
     }
 
     /**
-     * 投递职位之后 系统消息通知
+     * 求职者投递职位之后，收到系统发出的投递职位成功通知
+     *
      * @param joinPoint
      */
     @After("execution(public * com.personal.service.impl.Job_applyServiceImpl.postResume(..))")
     public void afterPostResume(JoinPoint joinPoint) {
+
         Object[] args = joinPoint.getArgs();
         Job_apply jobApply = (Job_apply) args[0];
+        //若投递失败 目标方法的参数会置空 不发消息
         if (jobApply.getPositionId() == null) {
-            //若投递失败 目标方法的参数会置空 不发消息
             return;
         }
         //投简历的人
         Users user = usersService.getUserById(jobApply.getUserId());
-        //投递的职位
+        //这个人投递的职位
         Position position = positionService.getPositionById(jobApply.getPositionId());
+        //消息队列主题topic
         String topic = ConstPool.KAFKA_TOPIC1;
-        //接收者用户名
+        //消息接收者用户名
         String username = user.getUsername();
         //消息内容
         String content = Util.getTime() + "，你投递了 [" + position.getName() + "] 职位";
         Message message = new Message(ConstPool.SYSTEM_USERNAME, username, content);
+        //这里冗杂了老哥！！！
         message.setFromId(usersService.getUserIdByUsername(ConstPool.SYSTEM_USERNAME));
         message.setToId(usersService.getUserIdByUsername(username));
         producer.send(topic, com.personal.util.Util.objectToJson(message));
     }
 
     /**！！！
-     * 添加/保存职位之后
+     * 招聘者添加/保存职位之后 ES同步职位数据
      * @param joinPoint
      */
     @After("execution(public * com.personal.service.impl.PositionServiceImpl.savePosition(..))")
     public void afterSavePosition(JoinPoint joinPoint) {
         Object[] args = joinPoint.getArgs();
-        //这时职位id已赋值
         Position position = (Position) args[0];
+        //职位已存在，新增职位失败
         if (position.getName() == null) {
             return;
         }
+        //查询ES中 职位名称 公司id
         String ESId = searchUtil.getPositionByName(position.getName(), position.getCompanyId());
         if (ESId == null || ESId.length() == 0) {
             String byId = searchUtil.getPositionById(position.getId());
@@ -126,18 +132,19 @@ public class PositionAspect {
     }
 
     /**
-     * 职位状态 status 改变之后
-     * ES也同步更新
+     * 职位状态改变之后，ES也同步更新
+     *
      * @param joinPoint
      */
     @After("execution(public * com.personal.service.impl.PositionServiceImpl.changePositionStatus(..))")
     public void afterChangePositionStatus(JoinPoint joinPoint) {
+        //消费者
         Position position = ObjectPool.getPosition();
         if (position == null) {
             return;
         }
         Object[] args = joinPoint.getArgs();
-        //目标方法的参数
+        //目标方法的第一个参数
         Map<String, Object> argMap = (Map<String, Object>) args[0];
         Map<String, Object> map = new HashMap<>();
         //要改成的职位状态
@@ -158,15 +165,20 @@ public class PositionAspect {
         searchUtil.updatePosition(ESId, map);
     }
 
-    /**sql查询不加limit
+    /**
+     * sql查询不加limit
      * 所有方法名后缀为 Length 的方法的前置通知
+     *
      * @param joinPoint
      */
     @Before("execution(* *Length(..))")
     public void beforeGetListLength(JoinPoint joinPoint) {
+
         Object[] args = joinPoint.getArgs();
         Map<String, Object> arg = (Map<String, Object>) args[0];
+        //当前页
         arg.remove("currentPage");
+        //页大小
         arg.remove("pageSize");
     }
 }

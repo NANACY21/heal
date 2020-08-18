@@ -33,7 +33,6 @@ import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.*;
 import org.elasticsearch.rest.RestStatus;
-import org.elasticsearch.search.Scroll;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.Aggregation;
@@ -57,19 +56,22 @@ import java.util.concurrent.TimeUnit;
 
 import static org.elasticsearch.index.query.QueryBuilders.*;
 
-/**https://blog.csdn.net/qq_32123821/article/details/97395023?depth_1-utm_source=distribute.pc_relevant.none-task&utm_source=distribute.pc_relevant.none-task
+/**ES客户端 ES工具类
+ *
+ * https://blog.csdn.net/qq_32123821/article/details/97395023?depth_1-utm_source=distribute.pc_relevant.none-task&utm_source=distribute.pc_relevant.none-task
  * https://www.cnblogs.com/java-spring/p/11721615.html
  * https://blog.csdn.net/Amor_Leo/article/details/101018008
  * https://www.cnblogs.com/betterwgo/p/11268869.html
  * https://blog.csdn.net/truong/article/details/62046063
  * https://blog.csdn.net/paditang/article/details/78802799
  * [已过时]public interface PositionRepository extends ElasticsearchRepository<Position, Long>
- * ES工具类
+ *
  *
  * @author 李箎
  */
 @Component
 public class ElasticSearchUtil {
+
     //！！！
 //    @Resource
     @Autowired
@@ -77,6 +79,7 @@ public class ElasticSearchUtil {
 
     /**
      * 返回实例
+     *
      * @return RestHighLevelClient
      * @throws Exception 异常信息
      */
@@ -95,6 +98,7 @@ public class ElasticSearchUtil {
 
     /**
      * 客户端是否单例
+     *
      * @return true
      */
     public boolean isSingleton() {
@@ -103,6 +107,7 @@ public class ElasticSearchUtil {
 
     /**
      * 客户端实例的销毁
+     *
      * @throws Exception 异常信息
      */
     public void destroy() throws Exception {
@@ -111,7 +116,8 @@ public class ElasticSearchUtil {
         }
     }
 
-    /**创建对象
+    /**
+     * 创建对象
      * 注入参数 参数设置之后 new一个高级别客户端实例
      * <li>Description: 自定义的构造方法 </li>
      *
@@ -132,7 +138,8 @@ public class ElasticSearchUtil {
         return response.getSource();
     }
 
-    /**ok
+    /**
+     * ok
      * 创建索引、配置映射，类似建库
      */
     public String createIndex(String indexName) {
@@ -198,7 +205,8 @@ public class ElasticSearchUtil {
         }
     }
 
-    /**ok
+    /**
+     * ok
      * 删除索引
      *
      * @param indexName
@@ -226,7 +234,8 @@ public class ElasticSearchUtil {
         return acknowledged ? "成功" : "失败";
     }
 
-    /**ok
+    /**
+     * ok
      * 判断索引是否存在
      *
      * @param indexName
@@ -244,7 +253,8 @@ public class ElasticSearchUtil {
         return exists;
     }
 
-    /**ok
+    /**
+     * ok
      * ES type 增一行
      *
      * @param position
@@ -287,8 +297,7 @@ public class ElasticSearchUtil {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             try {
                 this.destroy();
             } catch (Exception e) {
@@ -299,10 +308,11 @@ public class ElasticSearchUtil {
     }
 
 
-    /**ok
+    /**
+     * ok
      * 删除职位
      *
-     * @param id ES id
+     * @param id        ES id
      * @param indexName
      * @return
      */
@@ -320,8 +330,7 @@ public class ElasticSearchUtil {
         } catch (Exception e) {
             e.printStackTrace();
             return "ES删除职位异常";
-        }
-        finally {
+        } finally {
             try {
                 this.destroy();
             } catch (Exception e) {
@@ -361,7 +370,8 @@ public class ElasticSearchUtil {
         }
     }
 
-    /**想查有没有该职位名称并且该公司id的 应该是没有不能命中 但是仍然命中，这是因为分词查询的坑！！！
+    /**
+     * 想查有没有该职位名称并且该公司id的 应该是没有不能命中 但是仍然命中，这是因为分词查询的坑！！！
      * 所以使用完全匹配
      * 能不能命中的问题！！！
      * 不该命中的命中了，该命中的没命中，命中有误！！！要注意这种命中不准确的问题
@@ -409,6 +419,7 @@ public class ElasticSearchUtil {
 
     /**
      * 通过id查找职位
+     *
      * @param id 职位id MySQL主键 long类型
      * @return ES中主键id String类型
      */
@@ -447,7 +458,9 @@ public class ElasticSearchUtil {
         return "";
     }
 
-    /**ok
+    /**
+     * ok
+     * 在 企业版 - 职位列表 中 搜索职位
      * 招聘者的搜索
      * 按职位名称搜索职位
      * ES普通搜索示例
@@ -513,8 +526,7 @@ public class ElasticSearchUtil {
         } catch (Exception e) {
             e.printStackTrace();
             return new ArrayList<>();
-        }
-        finally {
+        } finally {
             try {
                 this.destroy();
             } catch (Exception e) {
@@ -525,6 +537,7 @@ public class ElasticSearchUtil {
 
     /**
      * 求职者的搜索
+     *
      * @param searchContent 搜索内容
      * @return
      */
@@ -565,12 +578,14 @@ public class ElasticSearchUtil {
                 ReleasePosition position = (ReleasePosition) Util.jsonToObject(new ReleasePosition(), sourceAsString);
                 positionList.add(position);
             }
+            if (positionList.size() == 0) {
+                return new ArrayList<>();
+            }
             return positionList;
         } catch (Exception e) {
             e.printStackTrace();
             return new ArrayList<>();
-        }
-        finally {
+        } finally {
             try {
                 this.destroy();
             } catch (Exception e) {
@@ -581,6 +596,7 @@ public class ElasticSearchUtil {
 
     /**
      * 聚合查询
+     *
      * @param searchContent
      * @return
      */
@@ -638,8 +654,7 @@ public class ElasticSearchUtil {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             try {
                 this.destroy();
             } catch (Exception e) {
@@ -660,7 +675,7 @@ public class ElasticSearchUtil {
             this.buildClient();
             BoolQueryBuilder boolQuery = new BoolQueryBuilder();
             //大于等于
-            RangeQueryBuilder rangeQuery= QueryBuilders.rangeQuery("name").gte(8);
+            RangeQueryBuilder rangeQuery = QueryBuilders.rangeQuery("name").gte(8);
             boolQuery.filter(rangeQuery);
             MatchQueryBuilder matchQuery = new MatchQueryBuilder("name", searchContent);
             boolQuery.must(matchQuery);
@@ -675,8 +690,7 @@ public class ElasticSearchUtil {
             System.out.println(response.toString());
         } catch (Exception e) {
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             try {
                 client.close();
             } catch (IOException e) {

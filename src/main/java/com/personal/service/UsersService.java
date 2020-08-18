@@ -10,9 +10,11 @@ public interface UsersService {
 
     /**
      * 用户注册
+     * 一个人可以有多个邮箱，一个邮箱最多一个人
      * 方式1：微信扫码以获取数据以注册；方式2：填写邮箱发验证码以注册；
      *
-     * 注册做的事：数据库增一行，确认身份；
+     * 注册做的事：数据库增一行，确认身份 用户的身份认证；
+     * 招聘者hr只需注册，自动加入到企业，企业有员工表，有新注册的招聘者会根据员工表自动认证、授权、加入公司，可以发布职位；
      *
      * @param users
      * @return
@@ -29,6 +31,13 @@ public interface UsersService {
      * @return
      */
     String login(Users users);
+
+    /**
+     * 退出登录
+     * @param username 用户名
+     * @return
+     */
+    String logout(String username);
 
     /**
      * 更新用户数据

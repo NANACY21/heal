@@ -17,9 +17,9 @@ public class Work_expServiceImpl implements Work_expService {
     private Work_expMapper mapper;
 
     /**
-     * 添加/修改工作经历
+     * 新增/编辑一个工作经历
      *
-     * @param work_exp
+     * @param work_exp 一个工作经历
      * @return
      */
     @Override
@@ -60,9 +60,9 @@ public class Work_expServiceImpl implements Work_expService {
     }
 
     /**
-     * 某个简历的工作经历列表
+     * 获得简历的工作经历列表通过简历id
      *
-     * @param resumeId
+     * @param resumeId 简历id
      * @return
      */
     @Override

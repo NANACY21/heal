@@ -11,10 +11,11 @@ import java.util.Properties;
 
 /**
  * 全局异常类
+ * @author 李箎
  */
 @ControllerAdvice
 @Configuration
-public class GlobaleException {
+public class GlobalException {
 
    /* @ExceptionHandler(value={java.lang.NullPointerException.class})
     public ModelAndView nullExceptionHandler(Exception e){
