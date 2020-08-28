@@ -43,9 +43,10 @@ public interface UsersService {
      * 更新用户数据
      *
      * @param users
-     * @return
+     * @param flag 0 改username 1 改密码
+     * @return 只返回 成功 失败
      */
-    String updateUsers(Users users);
+    String updateUsers(Users users, int flag);
 
     /**
      * 通过邮箱查询用户

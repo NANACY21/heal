@@ -1,9 +1,13 @@
 package com.personal.pojo;
 
+import java.io.Serializable;
+
 /**
  * @author 李箎
  */
-public class Users {
+public class Users implements Serializable {
+
+    private static final long serialVersionUID = -6369461689229689891L;
     private Long id;
 
     private Long companyId;
@@ -44,6 +48,7 @@ public class Users {
 
     /**
      * 重写构造器
+     *
      * @param username
      * @param password
      * @param code
@@ -60,7 +65,8 @@ public class Users {
         }
     }
 
-    /**需要写
+    /**
+     * 需要写
      * 默认构造器
      */
     public Users() {

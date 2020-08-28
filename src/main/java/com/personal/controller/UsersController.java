@@ -104,6 +104,7 @@ public class UsersController {
     }
 
     /**
+     * 退出登录 清redis、cookie
      * 删除cookie
      *
      * @param username
@@ -124,37 +125,46 @@ public class UsersController {
         return "66";
     }
 
-    /**
-     * 重置/修改密码
-     * Redis也需要修改
-     *
-     * @param users
-     * @return
-     */
-    @RequestMapping("/updatePassword")
-    @ResponseBody
-    public String updatePassword(@RequestBody Users users) {
-        return "用户登录密码重置" + service.updateUsers(users);
-    }
 
     /**
      * 修改用户名
-     * Redis也需要修改
+     * 同步 Redis、Cookie！！！！！！
      * Kafka不需要修改
-     * Cookie存的用户名也得改
+     *
      * 头像、简历照片文件名不用修改
      * ES中有数据就改 没有就不改
      * 前端空值-长度为0字符串 不存在的属性-null
      *
-     * @param users
+     * @param users 包含要改成的username userid能从前端拿到
      * @return
      */
     @RequestMapping("/updateUsername")
     @ResponseBody
     public String updateUsername(@RequestBody Users users, HttpServletRequest request, HttpServletResponse response) {
-        CookieTool.batchDeleteCookie(request, response, ConstPool.SESSION_KEY1);
-        CookieTool.batchAddCookie(response, ConstPool.SESSION_KEY1, users.getUsername());
-        return "用户名修改" + service.updateUsers(users);
+        String s = service.updateUsers(users, 0);
+        if ("成功".equals(s)) {
+            CookieTool.batchDeleteCookie(request, response, ConstPool.SESSION_KEY1);
+            CookieTool.batchAddCookie(response, ConstPool.SESSION_KEY1, users.getUsername());
+        }
+        return "用户名修改" + s;
+    }
+
+    /**
+     * 重置/修改密码
+     * Redis也需要修改
+     *
+     * @param users 包含新的密码 userid能从前端拿到
+     * @return
+     */
+    @RequestMapping("/updatePassword")
+    @ResponseBody
+    public String updatePassword(@RequestBody Users users, HttpServletRequest request, HttpServletResponse response) {
+        String s = service.updateUsers(users, 1);
+        if ("成功".equals(s)) {
+            CookieTool.batchDeleteCookie(request, response, ConstPool.SESSION_KEY2);
+            CookieTool.batchAddCookie(response, ConstPool.SESSION_KEY2, users.getNewPassword());
+        }
+        return "用户登录密码重置" + s;
     }
 
     /**

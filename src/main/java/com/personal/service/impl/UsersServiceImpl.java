@@ -1,5 +1,7 @@
 package com.personal.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.personal.mapper.UsersMapper;
 import com.personal.pojo.Employee;
 import com.personal.pojo.Users;
@@ -9,6 +11,8 @@ import com.personal.service.EmployeeService;
 import com.personal.service.UsersService;
 import com.personal.util.ConstPool;
 import com.personal.util.CookieTool;
+import com.personal.util.StrValidate;
+import com.personal.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -84,43 +88,51 @@ public class UsersServiceImpl implements UsersService {
      */
     @Override
     public String login(Users users) {
-        Users users1 = null;
+        //MySQL中的数据
+        Users users_MySQL = null;
+        /**
+         * 用户输入的密码
+         */
+        String password = users.getPassword();
         if ("2".equals(users.getLoginMode())) {
-            users1 = mapper.selectByEmail(users.getEmail());
+            users_MySQL = mapper.selectByEmail(users.getEmail());
         } else {
             //查询Redis
             if (redisUtil.get(users.getUsername()) != null) {
                 System.out.println("登录验证读取Redis");
-                if (redisUtil.get(users.getUsername()).equals(users.getPassword())) {
-                    return ConstPool.LOGIN_SUCCESS;
+                Users users_Redis = (Users) Util.jsonToObject(new Users(), redisUtil.get(users.getUsername()).toString());
+                if (users_Redis.getPassword().equals(password)) {
+                    users_MySQL = users_Redis;
+//                    return ConstPool.LOGIN_SUCCESS;
                 } else {
                     return ConstPool.LOGIN_PW_INCORRECT;
                 }
-            } else {
-                //Redis查不到则读取MySQL
+            }
+            //Redis查不到则读取MySQL
+            else {
                 System.out.println("登录验证读取MySQL");
-                users1 = mapper.selectByUsername(users.getUsername());
+                users_MySQL = mapper.selectByUsername(users.getUsername());
             }
         }
-        if (users1 == null) {
+        if (users_MySQL == null) {
             return ConstPool.USER_NOT_EXIST;
         }
-        if ("1".equals(users.getLoginMode()) && !users.getPassword().equals(users1.getPassword())) {
+        if ("1".equals(users.getLoginMode()) && !password.equals(users_MySQL.getPassword())) {
             return ConstPool.LOGIN_PW_INCORRECT;
         }
         System.out.println("从MySQL查到的数据：");
-        System.out.println(users1);
-        //参数是引用传递！！！
-        users.setId(users1.getId());
-        users.setCompanyId(users1.getCompanyId());
-        users.setUsername(users1.getUsername());
-        users.setPassword(users1.getPassword());
-        users.setUserType(users1.getUserType());
-        users.setUserId(users1.getUserId());
-        users.setEmail(users1.getEmail());
-        users.setAuth(users1.getAuth());
-        //添加登录缓存到Redis
-        redisUtil.set(users.getUsername(), users.getPassword());
+        System.out.println(users_MySQL);
+        //参数是引用传递！！！需要保证本方法的参数有值
+        users.setId(users_MySQL.getId());
+        users.setCompanyId(users_MySQL.getCompanyId());
+        users.setUsername(users_MySQL.getUsername());
+        users.setPassword(users_MySQL.getPassword());
+        users.setUserType(users_MySQL.getUserType());
+        users.setUserId(users_MySQL.getUserId());
+        users.setEmail(users_MySQL.getEmail());
+        users.setAuth(users_MySQL.getAuth());
+        //[登录缓存]用户信息
+        redisUtil.set(users.getUsername(), Util.objectToJson(users));
         return ConstPool.LOGIN_SUCCESS;
     }
 
@@ -142,41 +154,62 @@ public class UsersServiceImpl implements UsersService {
      * 更新用户数据
      *
      * @param users
-     * @return
+     * @param flag  0 改username 1 改密码
+     * @return 只返回 成功 失败
      */
     @Override
-    public String updateUsers(Users users) {
-        String newPassword = users.getNewPassword();
-        if (newPassword != null && newPassword.length() != 0) {
-            System.out.println("重置密码");
-            System.out.println(users);
-            String password = users.getPassword();
-            String newPasswordConfirm = users.getNewPasswordConfirm();
-            if (!newPassword.equals(newPasswordConfirm)) {
-                users.setNewPassword(null);
-                return "失败！两次密码不一致";
-            }
-            //这是重置密码
-            if (password.length() == 0) {
-            }
-            //这是修改密码
-            else if (password.length() != 0) {
-                String login = login(users);
-                if (login.indexOf("成功") == -1) {
-                    users.setNewPassword(null);
-                    return "原始密码错误";
-                }
-            }
-            users.setPassword(newPassword);
-            //前端空值-长度为0字符串 不存在的属性-null
-            users.setCompanyId(null);
-            users.setUsername(null);
-            users.setUserType(null);
-            users.setUserId(null);
-            users.setEmail(null);
-            users.setNewPassword(null);
+    public String updateUsers(Users users, int flag) {
+        if (null == users.getId()) {
+            return "失败";
         }
-        int i = mapper.updateByPrimaryKeySelective(users);
+        Users userDb = new Users();
+        userDb.setId(users.getId());
+        switch (flag) {
+            case 0:
+                //要改成这个username
+                String username = users.getUsername();
+                System.out.println("改username");
+                if (username.length() <= 5) {
+                    users.setUsername(null);
+                    return "失败";
+                }
+                if (mapper.selectByUsername(username) != null) {
+                    users.setUsername(null);
+                    return "失败";
+                }
+                userDb.setUsername(username);
+                break;
+            case 1:
+                System.out.println("改 重置 pw");
+                String password = users.getPassword();
+                String newPassword = users.getNewPassword();
+                String newPasswordConfirm = users.getNewPasswordConfirm();
+                if (!newPassword.equals(newPasswordConfirm)) {
+                    users.setNewPassword(null);
+                    return "失败！两次密码不一致";
+                }
+                if (!StrValidate.isLetterDigit(newPassword)) {
+                    users.setNewPassword(null);
+                    return "密码同时包含字母和数字8-20位";
+                }
+                //这是重置密码
+                if (password.length() == 0) {
+                }
+                //这是修改密码
+                else if (password.length() != 0) {
+                    String login = login(users);
+                    if (login.indexOf("成功") == -1) {
+                        users.setNewPassword(null);
+                        return "原始密码错误";
+                    }
+                }
+                userDb.setPassword(newPassword);
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + flag);
+        }
+
+        int i = mapper.updateByPrimaryKeySelective(userDb);
         return i > 0 ? "成功" : "失败";
     }
 
@@ -237,6 +270,12 @@ public class UsersServiceImpl implements UsersService {
      */
     @Override
     public String getUsernameByUserId(String userId) {
+
         return mapper.selectByUserId(userId).getUsername();
+    }
+
+    public static void main(String[] args) {
+        RedisUtil redisUtil = new RedisUtil();
+        redisUtil.delKey("zhouchao");
     }
 }
