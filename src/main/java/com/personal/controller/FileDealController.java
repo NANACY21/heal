@@ -1,4 +1,6 @@
 package com.personal.controller;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.personal.pojo.Users;
 import com.personal.service.UsersService;
 import com.personal.util.ConstPool;
@@ -10,10 +12,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import package1.Tool;
 
 import java.io.*;
 import java.net.SocketException;
 import java.util.Map;
+import java.util.Vector;
 
 /**
  * 上传文件
@@ -179,5 +183,101 @@ public class FileDealController {
     @ResponseBody
     public String readJSONFile(@RequestBody String companyId) {
         return Util.readJsonFileTool(new File(ConstPool.JSON_PATH, companyId + ".json"));
+    }
+
+    /**
+     * 账单 加载级联选择器年月显示项
+     * @return
+     */
+    @RequestMapping("/getBillDate")
+    @ResponseBody
+    public String getBillDate() {
+        //返回值
+        JSONArray res = new JSONArray();
+        //账单根目录
+        File rootDir = new File(ConstPool.BILL_PATH);
+        //所有年份目录
+        File[] allYear = rootDir.listFiles();
+        if (null == allYear || allYear.length == 0) {
+
+        }
+        for (int i = 0; i < allYear.length; i++) {
+            File year = allYear[i];
+            if (year.isDirectory()) {
+                //目录名称 如：2020
+                String name = year.getName();
+                JSONObject Year = new JSONObject();
+                Year.put("value", name);
+                Year.put("label", name);
+                //某年的所有月份
+                File[] allMonth = year.listFiles();
+                if (null == allMonth || allMonth.length == 0) {
+
+                } else {
+                    JSONArray monthList = new JSONArray();
+                    for (int j = 0; j < allMonth.length; j++) {
+                        File month = allMonth[j];
+                        if (month.isFile()) {
+                            String name1 = month.getName();
+                            //去掉.txt后缀
+                            name1 = name1.substring(0, name1.length() - 4);
+                            JSONObject mon = new JSONObject();
+                            mon.put("value", name1);
+                            mon.put("label", name1);
+                            monthList.add(mon);
+                        }
+                    }
+                    Year.put("children", monthList);
+                }
+                res.add(Year);
+            }
+        }
+        return res.toString();
+    }
+
+    /**
+     * 读取账单
+     * 支持年月选择
+     * 支持小数金额
+     * 不上传文件；Java代码只能读取文件
+     * @param yearmonth 202009 读取该月账单
+     * @return
+     */
+    @RequestMapping("/readBill")
+    @ResponseBody
+    public String readBill(@RequestBody String yearmonth) {
+
+        Tool tool = new Tool();
+        //按行读取账单 拼接文件路径
+        String year = yearmonth.substring(0, 4);
+        String month = yearmonth.substring(4, 6);
+        Vector<String> fileData = tool.getFileData(ConstPool.BILL_PATH + "\\" + year + "\\" + month + ".txt");
+        //总收入
+        long income = 0;
+        //总支出
+        long pay = 0;
+        long NetIncome = 0;
+        for (int i = 0; i < fileData.size(); i++) {
+            String row = fileData.get(i);
+            if (row.startsWith("+")) {
+
+                String s = (row.substring(1, row.length()).split(" "))[0];
+                //double -> long
+                //https://blog.csdn.net/qq_37834380/article/details/106788040
+                long i1 = new Double(Math.ceil(Double.parseDouble(s))).longValue();
+                income = income + i1;
+            }
+            if (row.startsWith("-")) {
+                //收支金额 注意：String类型小数值转换为Long类型
+                String s = (row.substring(1, row.length()).split(" "))[0];
+                //double -> long
+                //https://blog.csdn.net/qq_37834380/article/details/106788040
+                long i1 = new Double(Math.ceil(Double.parseDouble(s))).longValue();
+                pay = pay - i1;
+            }
+        }
+        NetIncome = income + pay;
+        String ss = pay + "";
+        return income + "#" + ss.substring(1, ss.length()) + "#" + NetIncome;
     }
 }

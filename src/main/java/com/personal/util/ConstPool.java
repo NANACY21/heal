@@ -57,6 +57,10 @@ public class ConstPool {
      */
     public static final String JSON_PATH = "D:\\allproject\\personal\\exodus\\exodus\\src\\assets\\e_data";
     /**
+     * 账单存放目录
+     */
+    public static final String BILL_PATH = "C:\\Users\\李箎\\Desktop\\账单";
+    /**
      * Kafka的一个topic
      */
     public static final String KAFKA_TOPIC1 = "exodusMsgList";
