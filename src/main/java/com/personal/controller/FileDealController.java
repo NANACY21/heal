@@ -241,7 +241,7 @@ public class FileDealController {
      * 支持小数金额
      * 不上传文件；Java代码只能读取文件
      * @param yearmonth 202009 读取该月账单
-     * @return
+     * @return 总收入#总支出#净收入 均为正数
      */
     @RequestMapping("/readBill")
     @ResponseBody
@@ -259,21 +259,18 @@ public class FileDealController {
         long NetIncome = 0;
         for (int i = 0; i < fileData.size(); i++) {
             String row = fileData.get(i);
-            if (row.startsWith("+")) {
-
-                String s = (row.substring(1, row.length()).split(" "))[0];
-                //double -> long
-                //https://blog.csdn.net/qq_37834380/article/details/106788040
-                long i1 = new Double(Math.ceil(Double.parseDouble(s))).longValue();
-                income = income + i1;
-            }
-            if (row.startsWith("-")) {
+            if (row.startsWith("+") || row.startsWith("-")) {
                 //收支金额 注意：String类型小数值转换为Long类型
                 String s = (row.substring(1, row.length()).split(" "))[0];
                 //double -> long
                 //https://blog.csdn.net/qq_37834380/article/details/106788040
                 long i1 = new Double(Math.ceil(Double.parseDouble(s))).longValue();
-                pay = pay - i1;
+                if (row.startsWith("+")) {
+                    income = income + i1;
+                }
+                if (row.startsWith("-")) {
+                    pay = pay - i1;
+                }
             }
         }
         NetIncome = income + pay;
