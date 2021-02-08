@@ -261,10 +261,10 @@ public class FileDealController {
             String row = fileData.get(i);
             if (row.startsWith("+") || row.startsWith("-")) {
                 //收支金额 注意：String类型小数值转换为Long类型
-                String s = (row.substring(1, row.length()).split(" "))[0];
+                String money = (row.substring(1, row.length()).split(" "))[0];
                 //double -> long
                 //https://blog.csdn.net/qq_37834380/article/details/106788040
-                long i1 = new Double(Math.ceil(Double.parseDouble(s))).longValue();
+                long i1 = new Double(Math.ceil(Double.parseDouble(money))).longValue();
                 if (row.startsWith("+")) {
                     income = income + i1;
                 }
@@ -274,7 +274,7 @@ public class FileDealController {
             }
         }
         NetIncome = income + pay;
-        String ss = pay + "";
-        return income + "#" + ss.substring(1, ss.length()) + "#" + NetIncome;
+        String temp = pay + "";
+        return income + "#" + temp.substring(1, temp.length()) + "#" + NetIncome;
     }
 }
